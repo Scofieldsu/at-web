@@ -169,7 +169,7 @@
       </a-modal>
     </a-col>
 
-    <!-- 右侧：活跃会话 + 活跃连接 + RPA 上报消息 -->
+    <!-- 右侧：活跃会话 + 活跃连接 + 客户端上报消息 -->
     <a-col :span="13">
       <!-- 活跃会话列表 -->
       <a-card class="theme-card">
@@ -287,7 +287,7 @@
   const injecting = ref(false);
   const injectResult = ref('');
 
-  // RPA 上报消息（client→server），注入后轮询刷新
+  // 客户端上报消息（client→server），注入后轮询刷新
   const reportedMessages = ref<any[]>([]);
   const loadingReported = ref(false);
   const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
@@ -666,7 +666,7 @@
     loadCommands();
     loadActiveConversations();
     loadReportedMessages();
-    // 每 3 秒轮询一次 RPA 上报消息，注入后无需手动刷新即可看到回执
+    // 每 3 秒轮询一次 客户端上报消息，注入后无需手动刷新即可看到回执
     reportedTimer = window.setInterval(loadReportedMessages, 3000);
   });
 
@@ -813,7 +813,7 @@
   border-bottom: 1px dashed rgba(0, 144, 255, 0.3);
 }
 
-/* ── RPA 上报消息 ── */
+/* ── 客户端上报消息 ── */
 .reported-hint {
   font-size: var(--vben-font-size-sm);
   margin-bottom: 4px;

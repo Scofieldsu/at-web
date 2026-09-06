@@ -1,6 +1,6 @@
 """执行引擎层 — 平台核心抽象。
 
-源平台的真实执行引擎（mitmproxy WS 中间人 + RPA 安装器 + Playwright）
+源平台的真实执行引擎（mitmproxy WS 中间人 + 测试版本安装器 + Playwright）
 被整体剥离；本包提供 Engine 接口 + 内置 DemoEngine。
 
 接入真实执行引擎：实现 Engine 接口，并在 create_app 中替换

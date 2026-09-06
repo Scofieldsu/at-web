@@ -1,8 +1,8 @@
 <template>
   <div class="env-grid">
-      <!-- 安装 RPA（左上） -->
+      <!-- 安装测试版本（左上） -->
       <a-card class="theme-card env-cell env-install">
-        <template #title><span class="sec-title tint-blue"><DownloadOutlined />安装 RPA</span></template>
+        <template #title><span class="sec-title tint-blue"><DownloadOutlined />安装测试版本</span></template>
         <a-form label-align="left" :label-col="{ style: { width: '96px' } }">
           <a-form-item label="平台">
             <a-select v-model:value="rpa.platform" placeholder="选择平台" style="width: 100%">
@@ -39,7 +39,7 @@
           <a-form-item label="目标机器">
             <a-input v-model:value="rpa.target_machine" placeholder="可选" />
           </a-form-item>
-          <a-button type="primary" :loading="installing" @click="installRpa">安装 RPA</a-button>
+          <a-button type="primary" :loading="installing" @click="installRpa">安装测试版本</a-button>
         </a-form>
         <pre v-if="rpaResult" class="json">{{ rpaResult }}</pre>
       </a-card>
@@ -245,7 +245,7 @@
     try {
       const { data } = await http.post('/env/install-rpa', rpa.value);
       rpaResult.value = JSON.stringify(data, null, 2);
-      data.success ? message.success('RPA 安装成功') : message.error(data.error || '安装失败');
+      data.success ? message.success('测试版本安装成功') : message.error(data.error || '安装失败');
     } catch (e: any) {
       rpaResult.value = JSON.stringify(e.response?.data || { error: String(e) }, null, 2);
       message.error(e.response?.data?.error || '安装请求失败');

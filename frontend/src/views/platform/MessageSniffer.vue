@@ -64,7 +64,7 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'direction'">
             <a-tag :color="isReport(record) ? 'blue' : 'green'" size="small">
-              {{ isReport(record) ? '↑ RPA→服务端' : '↓ 服务端→RPA' }}
+              {{ isReport(record) ? '↑ 客户端→服务端' : '↓ 服务端→客户端' }}
             </a-tag>
           </template>
           <template v-if="column.key === 'time'">

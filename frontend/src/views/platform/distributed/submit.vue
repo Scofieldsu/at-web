@@ -136,7 +136,7 @@
           已按「测试参数」的{{ envLabel }}默认值带出，可修改（仅对本次任务生效）
         </div>
 
-        <a-form-item label="RPA 版本">
+        <a-form-item label="测试版本">
           <a-auto-complete
             v-model:value="form.plan.version"
             :options="versionOptions"
@@ -178,10 +178,10 @@
         <a-form-item label="执行选项">
           <a-space direction="vertical">
             <a-checkbox v-model:checked="form.skipInstall">
-              跳过 RPA 安装（RPA_SKIP_INSTALL=1）
+              跳过测试版本安装
             </a-checkbox>
             <a-checkbox v-model:checked="form.keepAlive">
-              保持 RPA 运行（RPA_KEEP_ALIVE=1）
+              保持测试版本运行
             </a-checkbox>
           </a-space>
         </a-form-item>

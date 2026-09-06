@@ -1,5 +1,5 @@
 /**
- * 批量替换 views/rpa/*.vue 里的硬编码颜色和字号为 CSS 变量
+ * 批量替换 views/platform/*.vue 里的硬编码颜色和字号为 CSS 变量
  * 让页面样式和 linear-components.css 统一
  */
 const fs = require('fs');
@@ -117,7 +117,7 @@ function replaceInFile(filePath) {
   return false;
 }
 
-// 查找所有 rpa 页面（递归扫描目录）
+// 查找所有业务页面（递归扫描目录）
 function findVueFiles(dir) {
   const results = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -132,15 +132,15 @@ function findVueFiles(dir) {
   return results;
 }
 
-const rpaDir = path.join(__dirname, '../src/views/rpa');
-const files = findVueFiles(rpaDir);
+const platformDir = path.join(__dirname, '../src/views/platform');
+const files = findVueFiles(platformDir);
 
 console.log(`=== 开始统一颜色和字号 ===`);
 console.log(`找到 ${files.length} 个 Vue 文件\n`);
 
 let changedCount = 0;
 files.forEach((file) => {
-  const relativePath = path.relative(rpaDir, file);
+  const relativePath = path.relative(platformDir, file);
   if (replaceInFile(file)) {
     console.log(`✓ ${relativePath}`);
     changedCount++;

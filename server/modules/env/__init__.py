@@ -1,4 +1,4 @@
-"""环境管理模块 — 版本列表、RPA 安装、Agent 上线、浏览器用户（演示版）。
+"""环境管理模块 — 版本列表、测试版本安装、Agent 上线、浏览器用户（演示版）。
 
 源平台此模块驱动真实安装器与浏览器；通用框架版保留相同 API 契约：
 - 版本列表来自 config/platforms/platforms.json 的 versions 段
@@ -178,7 +178,7 @@ def _simulate_install(platform: str, version: str, install_type: str) -> dict:
 
 @bp.route("/install-rpa", methods=["POST"])
 def install_rpa_endpoint():
-    """安装 RPA（演示）。Body: {platform, version, install_type, download_url, target_machine}"""
+    """安装测试版本（演示）。Body: {platform, version, install_type, download_url, target_machine}"""
     data = request.get_json(force=True, silent=True) or {}
     platform = data.get("platform", "")
     version = data.get("version", "")
@@ -187,7 +187,7 @@ def install_rpa_endpoint():
     if platform not in _platforms():
         return jsonify({"error": f"不支持的平台: {platform}"}), 400
     result = _simulate_install(platform, version, data.get("install_type", "main"))
-    logger.info("RPA 安装（演示）: %s %s → %s", platform, version, result["message"])
+    logger.info("测试版本安装（演示）: %s %s → %s", platform, version, result["message"])
     return jsonify(result)
 
 

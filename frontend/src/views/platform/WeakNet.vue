@@ -40,6 +40,16 @@
           </a-descriptions-item>
         </a-descriptions>
       </div>
+
+      <div v-else-if="isRunning && !currentConfig" class="status-detail">
+        <a-alert type="warning" show-icon>
+          <template #message>外部启动</template>
+          <template #description>
+            检测到系统中运行的 Clumsy 实例（PID={{ statusData.pid }}），但该实例不是通过本管理控制台启动，无法查看配置详情。
+            可点击「停止弱网」结束该进程。
+          </template>
+        </a-alert>
+      </div>
     </a-card>
 
     <!-- 快捷预设卡片 -->
@@ -170,21 +180,19 @@
         <span class="sec-title tint-purple"><QuestionCircleOutlined />使用说明</span>
       </template>
 
-      <a-alert type="info" show-icon style="margin-bottom: 16px">
-        <template #message>演示模式</template>
+      <a-alert type="warning" show-icon style="margin-bottom: 16px">
+        <template #message>重要提示</template>
         <template #description>
-          当前为演示环境：弱网启动/停止为模拟运行（状态、PID、时长均为模拟数据），
-          不会实际影响本机网络流量；接入真实弱网工具后此页面可无缝切换。
+          <ul style="margin: 0; padding-left: 20px; text-align: left">
+            <li>Clumsy 需要<strong>管理员权限</strong>运行，请确保后端服务以管理员身份启动</li>
+            <li>弱网仅影响匹配过滤规则的流量，不会影响浏览器和其他软件</li>
+            <li>测试完成后请<strong>务必停止</strong>弱网，否则影响后续测试</li>
+            <li>如遇启动失败，请检查杀毒软件是否拦截了 WinDivert 驱动</li>
+          </ul>
         </template>
       </a-alert>
 
       <a-collapse>
-        <a-collapse-panel header="什么是弱网测试？" key="1">
-          <p>
-            弱网测试通过模拟网络延迟、丢包、带宽限制等真实网络环境问题，验证业务系统在恶劣网络条件下的稳定性和降级能力。
-          </p>
-        </a-collapse-panel>
-
         <a-collapse-panel header="预设配置说明" key="2">
           <a-descriptions :column="1" bordered size="small">
             <a-descriptions-item label="基线">无弱网注入，用于对比测试基线性能</a-descriptions-item>
@@ -287,7 +295,7 @@ const recommendedPresets = ['2g', '3g'];
 
 // 优先显示的预设（排序）
 const displayPresets = computed(() => {
-  const order = ['baseline', '3g', '2g', 'extreme', 'disconnect', 'platform_a_2g', 'platform_b_2g', 'chaos'];
+  const order = ['baseline', '3g', '2g', 'extreme', 'disconnect', 'chaos'];
   return presets.value.sort((a, b) => {
     const aIndex = order.indexOf(a.key);
     const bIndex = order.indexOf(b.key);

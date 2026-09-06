@@ -206,7 +206,7 @@ class AppConfig(BaseConfig):
         if isinstance(config_data.get("current_env"), str):
             app_config.current_env = config_data["current_env"]
 
-        # 环境选择器（与 rpa-test-automation 的 config/rpa/env.json 同构）：
+        # 环境选择器：
         # 优先级 环境变量 AT_WEB_ENV > config/env.json 的 current > config.yaml current_env > dev
         app_config.current_env = resolve_current_env(project_root, app_config.current_env)
 
@@ -227,7 +227,7 @@ ENV_JSON_RELPATH = Path("config") / "env.json"
 def resolve_current_env(project_root: str | Path, fallback: str = "dev") -> str:
     """解析当前环境。
 
-    优先级（与 rpa-test-automation 的 EnvLoader 一致，仅配置来源改为本项目）：
+    优先级：
       1. 环境变量 AT_WEB_ENV
       2. config/env.json 的 current 字段
       3. fallback（config.yaml 的 current_env）
@@ -253,7 +253,7 @@ def resolve_current_env(project_root: str | Path, fallback: str = "dev") -> str:
 
 
 def save_current_env(project_root: str | Path, env: str) -> None:
-    """把当前环境写回 config/env.json 的 current 字段（保留注释键，缩进与 rpa 项目一致）。"""
+    """把当前环境写回 config/env.json 的 current 字段（保留注释键，缩进保持不变）。"""
     import json
 
     env_file = Path(project_root) / ENV_JSON_RELPATH

@@ -1,7 +1,7 @@
 """弱网预设配置（演示版）。
 
-通用预设作用于 Mock 服务演示端口；平台专属预设作用于各抽象平台的
-演示网段（10.0.x.x），与真实项目脱敏一致。
+通用预设作用于 Mock 服务演示端口；高级预设用于多故障叠加场景，
+与真实项目脱敏一致（不含平台专属预设）。
 """
 from __future__ import annotations
 
@@ -52,30 +52,6 @@ PRESETS: dict[str, ClumsyConfig] = {
         drop_enabled=True,
         drop_chance=1.0,
     ),
-    # ── 平台A 专用（仅影响平台A 演示网段流量）──
-    "platform_a_2g": ClumsyConfig(
-        preset_name="平台A 2G 网络",
-        filter_rule=(
-            "(ip.DstAddr >= 10.0.1.0 and ip.DstAddr <= 10.0.1.255) or "
-            "(ip.SrcAddr >= 10.0.1.0 and ip.SrcAddr <= 10.0.1.255)"
-        ),
-        lag_enabled=True,
-        lag_time=500,
-        drop_enabled=True,
-        drop_chance=0.10,
-    ),
-    # ── 平台B 专用（仅影响平台B 演示网段流量）──
-    "platform_b_2g": ClumsyConfig(
-        preset_name="平台B 2G 网络",
-        filter_rule=(
-            "(ip.DstAddr >= 10.0.2.0 and ip.DstAddr <= 10.0.2.255) or "
-            "(ip.SrcAddr >= 10.0.2.0 and ip.SrcAddr <= 10.0.2.255)"
-        ),
-        lag_enabled=True,
-        lag_time=500,
-        drop_enabled=True,
-        drop_chance=0.10,
-    ),
     # ── 高级测试场景 ──
     "chaos": ClumsyConfig(
         preset_name="混沌网络（多故障叠加）",
@@ -119,8 +95,6 @@ def _get_preset_description(key: str) -> str:
         "2g": "延迟 500ms，丢包 10% - 推荐用于日常弱网测试，模拟 2G 网络环境",
         "extreme": "延迟 1000ms，丢包 20% - 极端弱网场景，测试系统降级能力",
         "disconnect": "100% 丢包 - 模拟完全断网，测试断网后的恢复逻辑",
-        "platform_a_2g": "仅影响平台A 演示网段流量（10.0.1.*.*），不影响其他服务",
-        "platform_b_2g": "仅影响平台B 演示网段流量（10.0.2.*.*），不影响其他服务",
         "chaos": "多种故障叠加（延迟+丢包+重复+乱序），测试系统在混沌环境下的健壮性",
     }
     return descriptions.get(key, "")

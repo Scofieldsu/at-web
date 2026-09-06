@@ -134,7 +134,7 @@
         </a-form-item>
 
         <a-divider>测试计划参数</a-divider>
-        <a-form-item label="RPA 版本">
+        <a-form-item label="测试版本">
           <a-input v-model:value="form.plan.version" placeholder="留空使用 latest" />
         </a-form-item>
         <a-form-item label="店铺">

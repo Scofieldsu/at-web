@@ -262,7 +262,7 @@ colorPrimary: '#dc2626',  // Red 600
 如果改乱了，想一键还原到 Linear 版本：
 
 ```bash
-cd c:/harper/rpa-test-automation/web-vben
+cd <at-web 项目根目录>/frontend
 git checkout src/App.vue
 pnpm build
 ```

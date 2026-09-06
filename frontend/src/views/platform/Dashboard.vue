@@ -27,6 +27,41 @@
         </div>
       </div>
 
+      <!-- 测试版本：按当前环境显示测试参数里各平台版本，与最新版本不一致时高亮提示；点击进测试参数页 -->
+      <div class="stat-card theme-card version-card" @click="go('/test/params')">
+        <div class="stat-icon neutral">
+          <TagOutlined :style="{ fontSize: '22px' }" />
+        </div>
+        <div class="ver-body">
+          <div class="stat-label">测试版本</div>
+          <div class="ver-cols">
+            <div
+              v-for="p in platformRows"
+              :key="p.value"
+              class="ver-col"
+              :class="{ stale: p.stale }"
+            >
+              <span class="pf-mark" :class="p.mark">{{ p.markChar }}</span>
+              <span class="ver-col-name">{{ p.label }}</span>
+              <a-tooltip
+                v-if="p.stale"
+                :title="`${p.label} 最新版本为 ${p.latest}`"
+                placement="top"
+              >
+                <span class="ver-col-ver">{{ p.version || '—' }}</span>
+              </a-tooltip>
+              <span v-else class="ver-col-ver" :title="`${p.label} ${p.version || '未配置'}`">
+                {{ p.version || '—' }}
+              </span>
+            </div>
+          </div>
+          <div v-if="stalePlatforms.length" class="ver-stale-tip">
+            <ExclamationCircleOutlined />
+            <span>{{ staleText }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="stat-card theme-card" @click="go('/prepare/proxy')">
         <div class="stat-icon" :class="proxy.running ? 'ok' : 'off'">
           <ApiOutlined :style="{ fontSize: '22px' }" />
@@ -35,17 +70,6 @@
           <div class="stat-label">代理状态</div>
           <div class="stat-value">{{ proxy.running ? '运行中' : '已停止' }}</div>
           <div class="stat-sub">PID {{ proxy.pid ?? '-' }} · 规则 {{ proxy.rules_count ?? 0 }}</div>
-        </div>
-      </div>
-
-      <div class="stat-card theme-card" @click="go('/prepare/proxy')">
-        <div class="stat-icon neutral">
-          <ShareAltOutlined :style="{ fontSize: '22px' }" />
-        </div>
-        <div class="stat-body">
-          <div class="stat-label">抓包流量</div>
-          <div class="stat-value">{{ flowsCount }}</div>
-          <div class="stat-sub">HTTP 流</div>
         </div>
       </div>
 
@@ -72,45 +96,83 @@
       </div>
     </div>
 
-    <!-- 失败报告（仅在有失败时显示，优先级最高） -->
-    <a-card v-if="failedReports.length" class="theme-card fail-card">
-      <template #title>
-        <div class="hdr">
-          <span class="fail-title sec-title tint-red">
-            <span class="fail-x">✗</span>
-            需要关注的失败（{{ failedReports.length }}）
-          </span>
-          <a-button type="link" size="small" @click="go('/test/report')">全部报告 →</a-button>
-        </div>
-      </template>
-      <a-table
-        :data-source="failedReports"
-        :columns="failColumns"
-        :pagination="false"
-        row-key="file"
-        size="small"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'case_name'">
-            <span class="fail-name">{{ record.case_name || '未命名' }}</span>
-          </template>
-          <template v-else-if="column.key === 'detail'">
-            <span class="status-badge failed">{{ failDetail(record.summary) }}</span>
-          </template>
-          <template v-else-if="column.key === 'time'">
-            {{ fmtTime(record.created_at || record.timestamp) }}
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="go(`/test/report?open=${record.file}`)">
-              看报告
-            </a-button>
-          </template>
-        </template>
-      </a-table>
-    </a-card>
-
-    <!-- 中部：最近任务 + 最近报告 -->
+    <!-- 中部：需要关注的失败 + 最近任务 + 最近报告（两列栅格，失败卡与"最近测试任务"同宽） -->
     <div class="mid">
+      <!-- 失败报告（仅在有失败时显示，优先级最高） -->
+      <a-card v-if="failedReports.length" class="theme-card fail-card">
+        <template #title>
+          <div class="hdr">
+            <span class="fail-title sec-title tint-red">
+              <span class="fail-x">✗</span>
+              需要关注的失败（{{ failedReports.length }}）
+            </span>
+            <a-button type="link" size="small" @click="go('/test/report')">全部报告 →</a-button>
+          </div>
+        </template>
+        <a-table
+          :data-source="failedReports"
+          :columns="failColumns"
+          :pagination="false"
+          row-key="file"
+          size="small"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'case_name'">
+              <span class="fail-name">{{ record.case_name || '未命名' }}</span>
+            </template>
+            <template v-else-if="column.key === 'detail'">
+              <span class="status-badge failed">{{ failDetail(record.summary) }}</span>
+            </template>
+            <template v-else-if="column.key === 'time'">
+              {{ fmtTime(record.created_at || record.timestamp) }}
+            </template>
+            <template v-else-if="column.key === 'action'">
+              <a-button type="link" size="small" @click="go(`/test/report?open=${record.file}`)">
+                看报告
+              </a-button>
+            </template>
+          </template>
+        </a-table>
+      </a-card>
+
+      <!-- 定时任务速览（启用中的定时计划：名称/周期/下次执行/最近结果） -->
+      <a-card class="theme-card" :body-style="{ padding: '0 4px 4px' }">
+        <template #title>
+          <div class="hdr">
+            <span class="sec-title tint-cyan"><FieldTimeOutlined />定时任务速览</span>
+            <a-button type="link" size="small" @click="go('/test/schedule')">全部 →</a-button>
+          </div>
+        </template>
+        <a-table
+          v-if="enabledSchedules.length"
+          :data-source="enabledSchedules"
+          :columns="scheduleColumns"
+          :pagination="false"
+          row-key="id"
+          size="small"
+          :scroll="{ y: 220 }"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'name'">
+              <span class="fail-name">{{ record.name }}</span>
+            </template>
+            <template v-else-if="column.key === 'spec'">
+              {{ specText(record.spec) }}
+            </template>
+            <template v-else-if="column.key === 'next_run_at'">
+              {{ fmtTime(record.next_run_at) }}
+            </template>
+            <template v-else-if="column.key === 'last'">
+              <a-tag v-if="record.last_run" :color="lastRunColor(record.last_run.status)">
+                {{ lastRunText(record.last_run.status) }}
+              </a-tag>
+              <span v-else class="muted">未运行</span>
+            </template>
+          </template>
+        </a-table>
+        <div v-else class="empty">暂无启用的定时任务</div>
+      </a-card>
+
       <a-card class="theme-card" :body-style="{ padding: '0 4px 4px' }">
         <template #title>
           <div class="hdr">
@@ -218,20 +280,25 @@
   defineOptions({ name: 'DashboardIndex' });
   import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import { ApiOutlined, ShareAltOutlined, BarChartOutlined, ClusterOutlined, CarryOutOutlined, FileDoneOutlined, AuditOutlined } from '@ant-design/icons-vue';
+  import { ApiOutlined, BarChartOutlined, ClusterOutlined, CarryOutOutlined, FileDoneOutlined, AuditOutlined, FieldTimeOutlined, TagOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import http from '@/api/platform/http';
   import { getMachinesList } from '@/api/platform/distributed';
   import type { Machine } from '@/api/platform/distributed';
+  import { getSchedules } from '@/api/platform/schedules';
+  import type { Schedule } from '@/api/platform/schedules';
   import { useTasksStore } from '@/store/modules/tasks';
 
   const router = useRouter();
   const tasksStore = useTasksStore();
 
   const proxy = ref<any>({});
-  const flowsCount = ref(0);
   const recentReports = ref<any[]>([]);
   const versionOverview = ref<any[]>([]);
   const machines = ref<Machine[]>([]);
+  const schedules = ref<Schedule[]>([]);
+  // 测试版本卡：各平台（当前环境测试参数版本 + 最新版本；环境在页面左上角已显示，卡片内不重复）
+  const planVersions = ref<Record<string, string>>({});
+  const latestVersions = ref<Record<string, string>>({});
   // 版本质量概览默认展开
   const verActiveKeys = ref<string[]>(['versions']);
   let timer: ReturnType<typeof setInterval> | null = null;
@@ -253,6 +320,12 @@
     { title: '失败情况', key: 'detail', width: 160 },
     { title: '时间', key: 'time', width: 150 },
     { title: '', key: 'action', width: 90 },
+  ];
+  const scheduleColumns = [
+    { title: '名称', key: 'name', ellipsis: true },
+    { title: '周期', key: 'spec', width: 110 },
+    { title: '下次执行', key: 'next_run_at', width: 120 },
+    { title: '最近', key: 'last', width: 84 },
   ];
 
   function go(path: string) {
@@ -342,6 +415,60 @@
     return recentReports.value.filter((r) => !reportPassed(r)).slice(0, 5);
   });
 
+  // 定时任务速览：启用中的计划（最多 5 条，按下次执行时间升序）
+  const enabledSchedules = computed(() => {
+    return schedules.value
+      .filter((s) => s.enabled)
+      .sort((a, b) => String(a.next_run_at).localeCompare(String(b.next_run_at)))
+      .slice(0, 5);
+  });
+
+  const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
+
+  // 测试版本卡：平台展示顺序与测试参数页一致（颜色/徽标对齐该页）
+  const DASH_PLATFORMS = [
+    { value: 'platform_a', label: '平台A', mark: 'pf-jd', markChar: 'A' },
+    { value: 'platform_b', label: '平台B', mark: 'pf-qn', markChar: 'B' },
+    { value: 'platform_c', label: '平台C', mark: 'pf-pdd', markChar: 'C' },
+    { value: 'platform_d', label: '平台D', mark: 'pf-dy', markChar: 'D' },
+  ];
+  const platformRows = computed(() =>
+    DASH_PLATFORMS.map((p) => {
+      const version = planVersions.value[p.value] || '';
+      const latest = latestVersions.value[p.value] || '';
+      return { ...p, version, latest, stale: !!(version && latest && version !== latest) };
+    }),
+  );
+  const stalePlatforms = computed(() => platformRows.value.filter((p) => p.stale));
+  const staleText = computed(() =>
+    stalePlatforms.value.map((p) => `${p.label} 最新版本为 ${p.latest}`).join('；'),
+  );
+
+  function specText(spec: any) {
+    if (!spec || !spec.type) return '-';
+    switch (spec.type) {
+      case 'daily':
+        return `每天 ${spec.time || ''}`.trim();
+      case 'weekly':
+        return (
+          `每周${(spec.weekdays || []).map((d: number) => WEEKDAYS[(d % 7) - 1] || '?').join('')}` +
+          (spec.time ? ` ${spec.time}` : '')
+        ).trim();
+      case 'monthly':
+        return `${spec.day_of_month || '?'}日 ${spec.time || ''}`.trim();
+      case 'interval':
+        return `每 ${spec.interval_hours || 1}h`;
+      default:
+        return spec.type;
+    }
+  }
+  function lastRunColor(s: string) {
+    return ({ success: 'success', failed: 'error', running: 'processing' } as any)[s] || 'default';
+  }
+  function lastRunText(s: string) {
+    return ({ success: '成功', failed: '失败', running: '运行中' } as any)[s] || s;
+  }
+
   // 失败明细文本（失败 2 / 错误 1）
   function failDetail(s: any) {
     if (!s || typeof s !== 'object') return '未知';
@@ -370,15 +497,39 @@
 
   async function loadProxy() {
     try {
-      const [{ data: st }, { data: fl }] = await Promise.all([
-        http.get('/proxy/status'),
-        http.get('/proxy/flows'),
-      ]);
+      const { data: st } = await http.get('/proxy/status');
       proxy.value = st || {};
-      flowsCount.value = Array.isArray(fl) ? fl.length : 0;
     } catch {
       /* 忽略 */
     }
+  }
+
+  // 测试版本：当前环境测试参数里的各平台版本 + 最新版本（与测试参数页同源接口）
+  async function loadRpaVersions() {
+    try {
+      const { data } = await http.get('/plan/');
+      const p = data.plan || {};
+      const vers: Record<string, string> = {};
+      for (const { value } of DASH_PLATFORMS) {
+        vers[value] = (p[value] && p[value].version) || '';
+      }
+      planVersions.value = vers;
+    } catch {
+      /* 忽略 */
+    }
+    const latest: Record<string, string> = {};
+    await Promise.all(
+      DASH_PLATFORMS.map(async ({ value }) => {
+        try {
+          const { data } = await http.get('/env/versions', { params: { platform: value } });
+          const vs: string[] = data.versions || [];
+          if (vs.length) latest[value] = vs[0];
+        } catch {
+          /* 该平台无版本/接口不可用时留空 */
+        }
+      }),
+    );
+    latestVersions.value = latest;
   }
 
   async function loadReports() {
@@ -395,6 +546,15 @@
       const res = await getMachinesList();
       // 响应体为 { data: Machine[], summary }，与 machines.vue/submit.vue 一致
       machines.value = res.data.data || [];
+    } catch {
+      /* 忽略 */
+    }
+  }
+
+  async function loadSchedules() {
+    try {
+      const { data } = await getSchedules();
+      schedules.value = Array.isArray(data?.schedules) ? data.schedules : [];
     } catch {
       /* 忽略 */
     }
@@ -442,6 +602,8 @@
     loadReports();
     loadVersions(); // 版本概览也纳入刷新（之前只加载一次）
     loadMachines(); // 机器状态
+    loadSchedules(); // 定时任务速览
+    loadRpaVersions(); // 测试版本（环境版本 + 最新）
   }
 
   // 页面不可见时暂停轮询，避免后台标签页持续打接口
@@ -490,8 +652,8 @@
   /* 环境标签：右上角，不占额外行高（负边距贴合卡片区上沿） */
   .cards {
     display: grid;
-    /* 机器在线卡（第 1 位）加宽容纳两列机器明细，其余统计卡收窄，行高保持一致 */
-    grid-template-columns: 2fr 0.9fr 0.9fr 0.9fr 0.9fr;
+    /* 机器在线卡（第 1 位）加宽容纳两列机器明细；代理状态（第 2 位）加宽、测试版本（第 3 位）收窄，其余统计卡收窄，行高保持一致 */
+    grid-template-columns: 2fr 1.6fr 0.9fr 0.9fr 0.9fr;
     gap: 12px;
     align-items: stretch;
   }
@@ -556,6 +718,92 @@
   .stat-sub {
     font-size: var(--vben-font-size-sm);
     color: var(--text-secondary);
+  }
+  /* 测试版本卡：左侧图标，右侧两列平台版本 */
+  .version-card {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .ver-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .ver-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 10px;
+    margin-top: 6px;
+  }
+  .ver-col {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    line-height: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .ver-col .pf-mark {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    font-size: 11px;
+  }
+  /* 平台徽标：基础样式与四色背景，与测试参数页（TestPlan.vue）保持完全一致 */
+  .pf-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .pf-jd {
+    background: #e5484d;
+  }
+  .pf-qn {
+    background: #0090ff;
+  }
+  .pf-pdd {
+    background: #f76b15;
+  }
+  .pf-dy {
+    background: #30a46c;
+  }
+  .ver-col-name {
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .ver-col-ver {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* 与最新版本不一致：整行高亮 + 提示最新版本 */
+  .ver-col.stale {
+    background: rgba(247, 107, 21, 0.1);
+    border-color: rgba(247, 107, 21, 0.45);
+  }
+  .ver-col.stale .ver-col-ver {
+    color: var(--warning-color);
+  }
+  /* 悬浮提示内的版本文本：保持可被 tooltip 捕获（display:inline 兜底） */
+  .ver-col.stale :deep(.ant-tooltip) {
+    z-index: 1050;
+  }
+  .ver-stale-tip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--warning-color);
   }
   /* 机器在线卡：左侧统计，右侧机器明细（每行一台：备注 + 当前任务） */
   .machine-card {
@@ -668,6 +916,9 @@
     padding: 12px;
     text-align: center;
   }
+  .muted {
+    color: var(--text-muted);
+  }
   .ver-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -696,9 +947,8 @@
     flex-wrap: wrap;
     gap: 4px 8px;
   }
-  /* 失败报告卡片 */
+  /* 失败报告卡片（与最近任务/报告同宽：栅格内不再额外留底边距） */
   .fail-card {
-    margin-bottom: 16px;
     border-left: 3px solid var(--error-color);
   }
   .fail-title {

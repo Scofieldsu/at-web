@@ -20,7 +20,7 @@ bp = Blueprint("cases", __name__, url_prefix="/api/cases")
 _MARK_DESC = {
     "smoke": "冒烟测试（安装+上线核心流程）",
     "regression": "回归测试（完整功能验证）",
-    "install": "RPA 安装相关",
+    "install": "测试版本安装相关",
     "online": "Agent 上线相关",
     "message": "消息收发/Mock 回复相关",
     "transfer": "转人工相关",

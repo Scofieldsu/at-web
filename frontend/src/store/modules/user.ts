@@ -15,6 +15,7 @@ import { usePermissionStore } from '@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
 import { isArray } from '@/utils/is';
+import { clearSavedPassword } from '@/utils/loginCredentials';
 import { h } from 'vue';
 
 interface UserState {
@@ -158,6 +159,8 @@ export const useUserStore = defineStore({
       this.setToken(undefined);
       this.setSessionTimeout(false);
       this.setUserInfo(null);
+      // 退出到登录页：记住的用户名保留、已存密码清空，下次需重新输入
+      clearSavedPassword();
       if (goLogin) {
         // 直接回登陆页
         router.replace(PageEnum.BASE_LOGIN);

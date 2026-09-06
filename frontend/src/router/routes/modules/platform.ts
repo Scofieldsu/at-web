@@ -166,6 +166,12 @@ const quality: AppRouteModule = {
       component: () => import('@/views/platform/VersionRecords.vue'),
       meta: { title: '版本测试记录', icon: 'ant-design:history-outlined' },
     },
+    {
+      path: 'changelog',
+      name: 'VersionChangelog',
+      component: () => import('@/views/platform/VersionChangelog.vue'),
+      meta: { title: '版本更新说明', icon: 'ant-design:file-text-outlined' },
+    },
   ],
 };
 

@@ -59,44 +59,50 @@ export interface InstallationStatus {
 /**
  * 启动弱网（预设或自定义配置）
  */
-export function startWeaknet(params: { preset: string } | { config: ClumsyConfig }) {
-  return http.post<StartResult>('/clumsy/start', params);
+export async function startWeaknet(params: { preset: string } | { config: ClumsyConfig }) {
+  const res = await http.post<StartResult>('/clumsy/start', params);
+  return res.data;
 }
 
 /**
  * 停止弱网
  */
-export function stopWeaknet() {
-  return http.post<StopResult>('/clumsy/stop', {});
+export async function stopWeaknet() {
+  const res = await http.post<StopResult>('/clumsy/stop', {});
+  return res.data;
 }
 
 /**
  * 查询运行状态
  */
-export function getStatus() {
-  return http.get<ClumsyStatus>('/clumsy/status');
+export async function getStatus() {
+  const res = await http.get<ClumsyStatus>('/clumsy/status');
+  return res.data;
 }
 
 /**
  * 获取所有预设配置
  */
-export function getPresets() {
-  return http.get<Record<string, PresetInfo>>('/clumsy/presets');
+export async function getPresets() {
+  const res = await http.get<Record<string, PresetInfo>>('/clumsy/presets');
+  return res.data;
 }
 
 /**
  * 检查安装状态
  */
-export function checkInstallation() {
-  return http.get<InstallationStatus>('/clumsy/installation');
+export async function checkInstallation() {
+  const res = await http.get<InstallationStatus>('/clumsy/installation');
+  return res.data;
 }
 
 /**
  * 校验配置（不启动）
  */
-export function validateConfig(config: ClumsyConfig) {
-  return http.post<{ valid: boolean; message: string; args?: string[]; summary?: string }>(
+export async function validateConfig(config: ClumsyConfig) {
+  const res = await http.post<{ valid: boolean; message: string; args?: string[]; summary?: string }>(
     '/clumsy/validate',
     { config },
   );
+  return res.data;
 }

@@ -277,7 +277,7 @@ def preview():
 
 @bp.route("/send", methods=["POST"])
 def send():
-    """向 RPA 推送消息（演示）。Body: {template, params} 或 {message}"""
+    """向客户端推送消息（演示）。Body: {template, params} 或 {message}"""
     with _lock:
         conns = list(_state["connections"])
     data = request.get_json(force=True, silent=True) or {}

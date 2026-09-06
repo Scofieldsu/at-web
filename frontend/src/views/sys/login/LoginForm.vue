@@ -49,6 +49,7 @@
   import { useUserStore } from '@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '@/hooks/web/useDesign';
+  import { loadLastCredentials, saveLastCredentials } from '@/utils/loginCredentials';
 
   const FormItem = Form.Item;
   const { t } = useI18n();
@@ -62,9 +63,11 @@
   const formRef = ref();
   const loading = ref(false);
 
+  // 记住上次登录凭据：刷新/重新打开预填上次的用户名与密码（无记录时用默认值）
+  const lastCredentials = loadLastCredentials();
   const formData = reactive({
-    account: 'admin',
-    password: 'demo123',
+    account: lastCredentials.account,
+    password: lastCredentials.password,
   });
 
   // 密码掩码点阵：按真实长度渲染大号黑色圆点
@@ -108,7 +111,9 @@
         username: data.account,
         mode: 'none', //不要默认的错误提示
       });
+      // 登录成功后记住本次凭据，下次打开预填
       if (userInfo) {
+        saveLastCredentials(data.account, data.password);
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
           description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,

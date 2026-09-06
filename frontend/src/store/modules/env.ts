@@ -49,7 +49,7 @@ export const useEnvStore = defineStore({
       }
     },
     /**
-     * 切换当前环境 — 写入服务端 config/env.json 的 current（与 rpa-test-automation 同机制），
+     * 切换当前环境 — 写入服务端 config/env.json 的 current，
      * 成功后立即更新本地环境标签，无需刷新。
      */
     async switchEnv(env: string) {

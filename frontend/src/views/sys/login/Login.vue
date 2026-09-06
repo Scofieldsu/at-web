@@ -308,7 +308,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  // 左侧两行大字：RPA / 自动化测试平台（与系统 Indigo/Info 色彩设计统一）
+  // 左侧两行大字：AT Web / 自动化测试平台（与系统 Indigo/Info 色彩设计统一）
   .login-hero-main {
     font-family: 'Orbitron', 'Arial Black', sans-serif;
     font-size: 76px;

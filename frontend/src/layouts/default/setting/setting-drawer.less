@@ -1,0 +1,96 @@
+// 设置抽屉样式
+.setting-drawer {
+  // 标题行：项目设置位于抽屉自带 header（与右上角关闭按钮同排，真正置顶）
+  .ant-drawer-header {
+    padding: 12px 24px 16px;
+    background: transparent;
+    border-bottom: 2px solid var(--vben-border);
+  }
+
+  .ant-drawer-body {
+    padding: 0;
+    background: var(--vben-bg-base);
+  }
+
+  .setting-drawer-header {
+    display: flex;
+    align-items: center;
+    min-height: 31px;
+    // 为右侧关闭按钮留位
+    padding-right: 36px;
+  }
+
+  // 第一档字号（最大、最显目）：抽屉标题
+  .setting-drawer-title {
+    display: inline-block;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.6px;
+    background: linear-gradient(135deg, var(--vben-primary) 0%, var(--vben-primary-active) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .setting-drawer-content {
+    padding: 24px;
+  }
+
+  .setting-section {
+    background: var(--vben-bg-base);
+    border-radius: var(--vben-radius-lg);
+    padding: 20px;
+    border: 1px solid var(--vben-border);
+
+    // 第二档字号：分节标题（导航栏模式）
+    &-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--vben-primary);
+      // 与下方说明文字拉开距离，避免挨得太近
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    &-text {
+      background: linear-gradient(135deg, var(--vben-primary) 0%, var(--vben-primary-hover) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    // 第三档字号：分节说明（请选择系统的导航栏布局），三级 32 → 24 → 18 从大到小
+    &-desc {
+      font-size: 18px;
+      color: var(--vben-text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+      // 与分节标题文字左对齐（图标 24px + gap 8px）
+      padding-left: 32px;
+    }
+  }
+
+  // 深色主题适配
+  html[data-theme='dark'] & {
+    .ant-drawer-header {
+      background: var(--vben-bg-elevated);
+      border-bottom-color: var(--vben-border);
+    }
+
+    .ant-drawer-close {
+      color: var(--vben-text-secondary);
+
+      &:hover {
+        color: var(--vben-text-primary);
+      }
+    }
+  }
+}

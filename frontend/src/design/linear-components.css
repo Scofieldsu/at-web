@@ -1,0 +1,748 @@
+/**
+ * Linear 风格组件样式 - 全局覆盖
+ * 针对业务页面大量自定义样式，统一改成 Linear 风格
+ *
+ * 优先级：高于页面内的 scoped 样式（通过 :where 降低特异性，但用 !important 强制关键属性）
+ */
+
+/* ========================================
+   1. CSS 变量定义（Linear 配色 + 尺寸）
+   ======================================== */
+:root {
+  /* ── 颜色系统 ── */
+  --vben-primary: #6366f1;           /* Linear Indigo 500 */
+  --vben-primary-hover: #4f46e5;     /* Indigo 600 */
+  --vben-primary-active: #4338ca;    /* Indigo 700 */
+  --vben-primary-bg: rgba(99, 102, 241, 0.08);  /* 半透明背景 */
+
+  --vben-success: #30a46c;           /* Radix Green 9 */
+  --vben-warning: #f76b15;           /* Radix Orange 9 */
+  --vben-error: #e5484d;             /* Radix Red 9 */
+  --vben-info: #0090ff;              /* Radix Blue 9 */
+
+  /* 文字颜色 */
+  --vben-text-primary: #1c2024;      /* 主文字（深灰黑） */
+  --vben-text-secondary: #60646c;    /* 次要文字（中灰） */
+  --vben-text-tertiary: #9ca3af;     /* 辅助文字（浅灰） */
+  --vben-text-disabled: #d4d4d8;     /* 禁用文字 */
+
+  /* 背景颜色 */
+  --vben-bg-base: #ffffff;           /* 基础背景 */
+  --vben-bg-elevated: #fafafa;       /* 抬升背景（卡片头部、表头） */
+  --vben-bg-hover: rgba(0, 0, 0, 0.02);  /* hover 背景 */
+  --vben-bg-active: rgba(99, 102, 241, 0.12);  /* 激活背景 */
+
+  /* 边框颜色 */
+  --vben-border: #e5e5e5;            /* 默认边框 */
+  --vben-border-light: #f0f0f0;      /* 浅边框 */
+  --vben-border-dark: #d4d4d8;       /* 深边框 */
+
+  /* 旧变量兼容（页面里用的那些） */
+  --accent: var(--vben-primary);
+  --text-muted: var(--vben-text-secondary);
+  --border-color: var(--vben-border);
+  --error-color: var(--vben-error);
+
+  /* ── 尺寸系统 ── */
+  --vben-font-size-base: 13px;       /* 基础字号 */
+  --vben-font-size-sm: 12px;         /* 小字号 */
+  --vben-font-size-lg: 14px;         /* 大字号 */
+
+  --vben-spacing-xs: 4px;            /* 最小间距 */
+  --vben-spacing-sm: 8px;            /* 小间距 */
+  --vben-spacing: 12px;              /* 默认间距 */
+  --vben-spacing-lg: 16px;           /* 大间距 */
+  --vben-spacing-xl: 24px;           /* 超大间距 */
+
+  --vben-radius-sm: 2px;             /* 小圆角 */
+  --vben-radius: 4px;                /* 默认圆角 */
+  --vben-radius-lg: 6px;             /* 大圆角 */
+
+  --vben-control-height: 32px;       /* 控件高度 */
+  --vben-control-height-sm: 26px;    /* 小控件 */
+  --vben-control-height-lg: 38px;    /* 大控件 */
+}
+
+/* ========================================
+   1.5. 深色主题 CSS 变量
+   ======================================== */
+html[data-theme='dark'] {
+  /* 颜色系统 - 深色适配 */
+  --vben-primary: #6d70f6;           /* 深色下主色稍微亮一点 */
+  --vben-primary-hover: #7c7ffa;     /* 深色 hover */
+  --vben-primary-active: #5b5ef0;    /* 深色 active */
+  --vben-primary-bg: rgba(109, 112, 246, 0.15);
+
+  --vben-success: #3bb97e;           /* 深色下成功色更亮 */
+  --vben-warning: #ff8c3a;           /* 深色下警告色更亮 */
+  --vben-error: #f26a6f;             /* 深色下错误色更亮 */
+  --vben-info: #1fa3ff;              /* 深色下信息色更亮 */
+
+  /* 文字颜色 - 深色适配 */
+  --vben-text-primary: #e5e7eb;      /* 深色主文字 */
+  --vben-text-secondary: #9ca3af;    /* 深色次要文字 */
+  --vben-text-tertiary: #6b7280;     /* 深色辅助文字 */
+  --vben-text-disabled: #4b5563;     /* 深色禁用文字 */
+
+  /* 背景颜色 - 深色适配 */
+  --vben-bg-base: #1e2028;           /* 深色基础背景 */
+  --vben-bg-elevated: #262a34;       /* 深色抬升背景 */
+  --vben-bg-hover: rgba(255, 255, 255, 0.05);  /* 深色 hover */
+  --vben-bg-active: rgba(109, 112, 246, 0.2);  /* 深色激活背景 */
+
+  /* 边框颜色 - 深色适配 */
+  --vben-border: #2a2d38;            /* 深色默认边框 */
+  --vben-border-light: #202329;      /* 深色浅边框 */
+  --vben-border-dark: #333745;       /* 深色深边框 */
+}
+
+/* ========================================
+   2. antd 组件全局覆盖（强制 Linear 风格）
+   ======================================== */
+
+/* ── Table 表格 ── */
+.ant-table {
+  font-size: 13px !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--vben-bg-elevated) !important;
+  color: var(--vben-text-primary) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;        /* 紧凑行高 */
+  border-bottom: 1px solid var(--vben-border) !important;
+}
+
+.ant-table-tbody > tr > td {
+  padding: 8px 12px !important;        /* 和表头一致 */
+  border-bottom: 1px solid var(--vben-border-light) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--vben-bg-hover) !important;
+}
+
+/* 去掉斑马纹 */
+.ant-table-tbody > tr.ant-table-row-striped > td,
+.ant-table-tbody > tr.ant-table-row:nth-child(2n) > td {
+  background: transparent !important;
+}
+
+.ant-table-tbody > tr.ant-table-row:nth-child(2n):hover > td {
+  background: var(--vben-bg-hover) !important;
+}
+
+/* 激活行 */
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--vben-bg-active) !important;
+}
+
+/* 表格紧凑模式 */
+.ant-table-small .ant-table-thead > tr > th,
+.ant-table-small .ant-table-tbody > tr > td {
+  padding: 6px 10px !important;
+}
+
+/* ── Card 卡片 ── */
+.ant-card {
+  border-radius: var(--vben-radius) !important;
+  border-color: var(--vben-border) !important;
+  box-shadow: none !important;         /* 去阴影 */
+}
+
+.ant-card-head {
+  background: transparent !important;
+  border-bottom-color: var(--vben-border-light) !important;
+  padding: 12px 16px !important;       /* 紧凑内边距 */
+  min-height: unset !important;
+}
+
+.ant-card-head-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--vben-text-primary) !important;
+}
+
+.ant-card-body {
+  padding: 16px !important;            /* 默认卡片内边距 */
+}
+
+.ant-card-small .ant-card-body {
+  padding: 12px !important;
+}
+
+/* theme-card 类（业务页面常用） */
+.theme-card.ant-card {
+  border: 1px solid var(--vben-border) !important;
+}
+
+.theme-card .ant-card-head {
+  background: var(--vben-bg-elevated) !important;
+}
+
+/* ── Button 按钮 ── */
+.ant-btn {
+  height: var(--vben-control-height) !important;
+  padding: 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: var(--vben-radius) !important;
+  box-shadow: none !important;         /* 去阴影 */
+}
+
+.ant-btn-sm {
+  height: var(--vben-control-height-sm) !important;
+  padding: 0 8px !important;
+  font-size: 12px !important;
+}
+
+.ant-btn-lg {
+  height: var(--vben-control-height-lg) !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+}
+
+/* 主按钮 */
+.ant-btn-primary {
+  background: var(--vben-primary) !important;
+  border-color: var(--vben-primary) !important;
+}
+
+.ant-btn-primary:hover {
+  background: var(--vben-primary-hover) !important;
+  border-color: var(--vben-primary-hover) !important;
+}
+
+.ant-btn-primary:active {
+  background: var(--vben-primary-active) !important;
+  border-color: var(--vben-primary-active) !important;
+}
+
+/* 默认按钮 */
+.ant-btn-default {
+  border-color: var(--vben-border-dark) !important;
+  color: var(--vben-text-primary) !important;
+}
+
+.ant-btn-default:hover {
+  border-color: var(--vben-primary) !important;
+  color: var(--vben-primary) !important;
+}
+
+/* ── Input 输入框 ── */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-picker {
+  height: var(--vben-control-height) !important;
+  font-size: 13px !important;
+  border-radius: var(--vben-radius) !important;
+  border-color: var(--vben-border-dark) !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-input-number:hover,
+.ant-picker:hover {
+  border-color: var(--vben-primary) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-number-focused,
+.ant-picker-focused {
+  border-color: var(--vben-primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* 小尺寸输入框 */
+.ant-input-sm,
+.ant-input-affix-wrapper-sm,
+.ant-input-number-sm {
+  height: var(--vben-control-height-sm) !important;
+  font-size: 12px !important;
+}
+
+/* affix 包装（密码 / allowClear / 搜索等）内的输入：
+   外层 wrapper 已按 --vben-control-height 定高并 flex 居中，若内层 input 再被全局
+   height!important 撑成固定高，会超出内容区、值文本贴住下边框。这里让内层贴合外层
+   内容高度并用行高居中，一次修复密码框 / 带清除按钮输入框的同类问题。 */
+.ant-input-affix-wrapper input.ant-input {
+  height: 100% !important;
+  line-height: normal !important;
+  vertical-align: middle;
+}
+
+/* Textarea */
+/* antd 的 textarea 元素 class 也是 ant-input：无 count/allowClear 时外层没有
+   .ant-input-textarea 包裹（裸 textarea.ant-input），下面两条选择器都要覆盖，
+   否则会被上面 .ant-input 的 height:32px !important 压成单行。 */
+.ant-input-textarea textarea,
+textarea.ant-input {
+  font-size: 13px !important;
+  border-radius: var(--vben-radius) !important;
+  height: auto !important;
+}
+
+/* ── Select 下拉框 ── */
+.ant-select {
+  font-size: 13px !important;
+}
+
+.ant-select-selector {
+  height: var(--vben-control-height) !important;
+  border-radius: var(--vben-radius) !important;
+  border-color: var(--vben-border-dark) !important;
+}
+
+.ant-select-single .ant-select-selector {
+  display: flex;
+  align-items: center;
+}
+
+.ant-select:hover .ant-select-selector {
+  border-color: var(--vben-primary) !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: var(--vben-primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* 下拉选项 */
+.ant-select-dropdown {
+  border-radius: var(--vben-radius-lg) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ant-select-item {
+  height: 32px !important;
+  /* line-height 必须 = height - 上下 padding（32 - 6*2 = 20），否则文字垂直方向
+     被内容区裁掉，选项只显示上半部分 */
+  line-height: 20px !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+}
+
+.ant-select-item-option-selected {
+  background: var(--vben-bg-active) !important;
+  font-weight: 500 !important;
+}
+
+.ant-select-item-option-active {
+  background: var(--vben-bg-hover) !important;
+}
+
+/* ── Form 表单 ── */
+.ant-form-item {
+  margin-bottom: 16px !important;      /* 紧凑行距 */
+}
+
+.ant-form-item-label > label {
+  font-size: 13px !important;
+  color: var(--vben-text-secondary) !important;
+  height: 28px !important;
+}
+
+.ant-form-item-label > label.ant-form-item-required::before {
+  color: var(--vben-error) !important;
+}
+
+/* 垂直布局表单 label 下边距 */
+.ant-form-vertical .ant-form-item-label {
+  padding-bottom: 4px !important;
+}
+
+/* 表单说明文字 */
+.ant-form-item-explain,
+.ant-form-item-extra {
+  font-size: 12px !important;
+  color: var(--vben-text-tertiary) !important;
+}
+
+/* ── Tag 标签 ── */
+.ant-tag {
+  font-size: 12px !important;
+  padding: 2px 8px !important;
+  border-radius: var(--vben-radius-sm) !important;
+  border: none !important;
+}
+
+/* 默认标签 */
+.ant-tag-default {
+  background: var(--vben-bg-elevated) !important;
+  color: var(--vben-text-primary) !important;
+}
+
+/* 主色标签 */
+.ant-tag-blue,
+.ant-tag-primary {
+  background: rgba(99, 102, 241, 0.12) !important;
+  color: var(--vben-primary) !important;
+}
+
+/* 成功标签 */
+.ant-tag-green,
+.ant-tag-success {
+  background: rgba(48, 164, 108, 0.12) !important;
+  color: var(--vben-success) !important;
+}
+
+/* 警告标签 */
+.ant-tag-orange,
+.ant-tag-warning {
+  background: rgba(247, 107, 21, 0.12) !important;
+  color: var(--vben-warning) !important;
+}
+
+/* 错误标签 */
+.ant-tag-red,
+.ant-tag-error {
+  background: rgba(229, 72, 77, 0.12) !important;
+  color: var(--vben-error) !important;
+}
+
+/* 紫色标签 - 用于外部系统等特殊标记 */
+.ant-tag-purple {
+  background: rgba(124, 58, 237, 0.12) !important;
+  color: #7c3aed !important;
+}
+
+/* ── Checkbox / Radio ── */
+.ant-checkbox-inner,
+.ant-radio-inner {
+  border-radius: var(--vben-radius-sm) !important;
+  border-color: var(--vben-border-dark) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-radio-checked .ant-radio-inner {
+  background: var(--vben-primary) !important;
+  border-color: var(--vben-primary) !important;
+}
+
+.ant-checkbox-wrapper,
+.ant-radio-wrapper {
+  font-size: 13px !important;
+  color: var(--vben-text-primary) !important;
+}
+
+/* Radio Button */
+.ant-radio-button-wrapper {
+  height: var(--vben-control-height) !important;
+  line-height: 30px !important;
+  font-size: 13px !important;
+  border-color: var(--vben-border-dark) !important;
+}
+
+.ant-radio-button-wrapper-checked {
+  background: var(--vben-primary-bg) !important;
+  border-color: var(--vben-primary) !important;
+  color: var(--vben-primary) !important;
+}
+
+/* ── Modal 弹窗 ── */
+.ant-modal {
+  border-radius: var(--vben-radius-lg) !important;
+}
+
+.ant-modal-header {
+  background: var(--vben-bg-elevated) !important;
+  border-bottom-color: var(--vben-border-light) !important;
+  padding: 16px !important;
+  border-radius: var(--vben-radius-lg) var(--vben-radius-lg) 0 0 !important;
+}
+
+.ant-modal-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--vben-text-primary) !important;
+}
+
+.ant-modal-body {
+  padding: 16px !important;
+  font-size: 13px !important;
+}
+
+.ant-modal-footer {
+  padding: 12px 16px !important;
+  border-top-color: var(--vben-border-light) !important;
+}
+
+/* ── Divider 分隔线 ── */
+.ant-divider {
+  border-color: var(--vben-border-light) !important;
+}
+
+/* ── Descriptions 描述列表 ── */
+.ant-descriptions-item-label {
+  font-size: 13px !important;
+  color: var(--vben-text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+.ant-descriptions-item-content {
+  font-size: 13px !important;
+  color: var(--vben-text-primary) !important;
+}
+
+/* ========================================
+   3. 业务页面自定义组件样式统一
+   ======================================== */
+
+/* ── 页面容器 ── */
+.page {
+  gap: var(--vben-spacing) !important;
+}
+
+/* ── 筛选栏 ── */
+.filter-card {
+  border: 1px solid var(--vben-border) !important;
+}
+
+.filter-bar {
+  gap: var(--vben-spacing-sm) !important;
+}
+
+.filter-group {
+  gap: var(--vben-spacing-sm) !important;
+}
+
+.filter-label {
+  color: var(--vben-text-secondary) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 32px !important;         /* 和控件高度对齐 */
+}
+
+.filter-section-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--vben-text-secondary) !important;
+}
+
+.filter-actions {
+  gap: var(--vben-spacing) !important;
+  padding-top: var(--vben-spacing-sm) !important;
+  border-top: 1px dashed var(--vben-border) !important;
+}
+
+/* ── 工具栏 ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--vben-spacing) !important;
+  flex-wrap: wrap;
+}
+
+.toolbar .label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--vben-text-secondary) !important;
+}
+
+.toolbar .hint {
+  font-size: 12px !important;
+  color: var(--vben-text-tertiary) !important;
+}
+
+/* ── 统计数字 ── */
+.hit-count,
+.stat-number {
+  color: var(--vben-primary) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.hit-count strong,
+.stat-number strong {
+  color: var(--vben-primary) !important;
+  font-size: 15px !important;
+}
+
+/* ── 状态颜色统一 ── */
+.text-success {
+  color: var(--vben-success) !important;
+}
+
+.text-warning {
+  color: var(--vben-warning) !important;
+}
+
+.text-error {
+  color: var(--vben-error) !important;
+}
+
+.text-info {
+  color: var(--vben-info) !important;
+}
+
+.text-muted {
+  color: var(--vben-text-tertiary) !important;
+}
+
+/* ── 状态徽标（pass/fail，参考 VersionRecords status-badge；全局统一供 Dashboard/TestReport 复用）── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: var(--vben-font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  min-width: 52px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.status-badge::before {
+  font-weight: 700;
+  margin-right: 4px;
+}
+.status-badge.passed {
+  background: rgba(48, 164, 108, 0.12);
+  color: var(--vben-success);
+  border: 1px solid rgba(48, 164, 108, 0.35);
+}
+.status-badge.passed::before {
+  content: "✓";
+}
+.status-badge.failed {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--vben-error);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+}
+.status-badge.failed::before {
+  content: "✗";
+}
+.status-badge.error {
+  background: rgba(229, 72, 77, 0.14);
+  color: var(--vben-error);
+  border: 1px solid rgba(229, 72, 77, 0.3);
+}
+.status-badge.error::before {
+  content: "⚠";
+}
+.status-badge.skipped {
+  background: rgba(247, 107, 21, 0.12);
+  color: var(--vben-warning);
+  border: 1px solid rgba(247, 107, 21, 0.25);
+}
+.status-badge.skipped::before {
+  content: "–";
+}
+
+/* ── 区块标题（图标 + 浅色系彩色块，全系统统一）── */
+.sec-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: var(--vben-font-size-base);
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.tint-indigo { background: rgba(99, 102, 241, 0.12); color: var(--vben-primary); }
+.tint-green  { background: rgba(48, 164, 108, 0.12); color: var(--vben-success); }
+.tint-blue   { background: rgba(0, 144, 255, 0.12); color: var(--vben-info); }
+.tint-orange { background: rgba(247, 107, 21, 0.12); color: var(--vben-warning); }
+.tint-red    { background: rgba(229, 72, 77, 0.12); color: var(--vben-error); }
+.tint-purple { background: rgba(124, 58, 237, 0.12); color: #7c3aed; }
+.tint-cyan   { background: rgba(6, 182, 212, 0.12); color: #06b6d4; }
+
+/* ── 提示区块统一配色：浅底 + 感叹号同色（对齐消息注入页目标连接提示）── */
+.ant-alert {
+  border-radius: var(--vben-radius-lg);
+}
+.ant-alert-info {
+  background: rgba(0, 144, 255, 0.06) !important;
+  border: 1px solid rgba(0, 144, 255, 0.25) !important;
+}
+.ant-alert-info .ant-alert-icon {
+  color: var(--vben-info) !important;
+}
+.ant-alert-success {
+  background: rgba(48, 164, 108, 0.06) !important;
+  border: 1px solid rgba(48, 164, 108, 0.25) !important;
+}
+.ant-alert-success .ant-alert-icon {
+  color: var(--vben-success) !important;
+}
+.ant-alert-warning {
+  background: rgba(247, 107, 21, 0.06) !important;
+  border: 1px solid rgba(247, 107, 21, 0.25) !important;
+}
+.ant-alert-warning .ant-alert-icon {
+  color: var(--vben-warning) !important;
+}
+.ant-alert-error {
+  background: rgba(229, 72, 77, 0.06) !important;
+  border: 1px solid rgba(229, 72, 77, 0.25) !important;
+}
+.ant-alert-error .ant-alert-icon {
+  color: var(--vben-error) !important;
+}
+
+/* ── Mark 描述 ── */
+.mark-desc {
+  color: var(--vben-text-tertiary) !important;
+  font-size: 12px !important;
+}
+
+.mark-checkbox-group {
+  gap: var(--vben-spacing-xs) var(--vben-spacing) !important;
+}
+
+/* ── 旧的硬编码颜色覆盖 ── */
+.radio-and.ant-radio-button-wrapper-checked {
+  border-color: var(--vben-primary) !important;
+  color: var(--vben-primary) !important;
+}
+
+.radio-or.ant-radio-button-wrapper-checked {
+  border-color: var(--vben-warning) !important;
+  color: var(--vben-warning) !important;
+}
+
+/* ========================================
+   4. 滚动条样式（可选，Linear 风格极细滚动条）
+   ======================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   5. 响应式调整（小屏幕进一步紧凑）
+   ======================================== */
+@media (max-width: 768px) {
+  :root {
+    --vben-font-size-base: 12px;
+    --vben-spacing: 8px;
+    --vben-control-height: 28px;
+  }
+
+  .ant-card-body {
+    padding: 12px !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 6px 8px !important;
+  }
+}

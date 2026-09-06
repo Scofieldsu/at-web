@@ -1,0 +1,511 @@
+{
+  "platform_a": [
+    {
+      "file": "cases/platform_a/test_install_rpa_smoke.py",
+      "name": "test_install_rpa_smoke",
+      "module": "install",
+      "marks": [
+        "platform_a",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "quick"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_install_rpa_full.py",
+      "name": "test_install_rpa_full",
+      "module": "install",
+      "marks": [
+        "platform_a",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "upgrade"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_agent_online.py",
+      "name": "test_agent_online",
+      "module": "online",
+      "marks": [
+        "platform_a",
+        "online",
+        "smoke"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "first_login",
+        "relogin"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_agent_reconnect.py",
+      "name": "test_agent_reconnect",
+      "module": "online",
+      "marks": [
+        "platform_a",
+        "online",
+        "smoke",
+        "slow"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "network_drop",
+        "agent_restart"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_send_text_reply.py",
+      "name": "test_send_text_reply",
+      "module": "message",
+      "marks": [
+        "platform_a",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "greeting",
+        "stock",
+        "shipping"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_send_image_reply.py",
+      "name": "test_send_image_reply",
+      "module": "message",
+      "marks": [
+        "platform_a",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "product_pic",
+        "detail_pic"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_send_card_reply.py",
+      "name": "test_send_card_reply",
+      "module": "message",
+      "marks": [
+        "platform_a",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "item_card",
+        "coupon_card"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_transfer_to_human.py",
+      "name": "test_transfer_to_human",
+      "module": "transfer",
+      "marks": [
+        "platform_a",
+        "transfer",
+        "regression"
+      ],
+      "doc": "转人工：触发条件 → 转接 → 会话交接校验",
+      "scenarios": [
+        "user_request",
+        "forbidden_word"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_idempotent_reply.py",
+      "name": "test_idempotent_reply",
+      "module": "message",
+      "marks": [
+        "platform_a",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "duplicate_msg",
+        "reorder_msg"
+      ]
+    },
+    {
+      "file": "cases/platform_a/test_forbidden_word_filter.py",
+      "name": "test_forbidden_word_filter",
+      "module": "message",
+      "marks": [
+        "platform_a",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "sensitive_text"
+      ]
+    }
+  ],
+  "platform_b": [
+    {
+      "file": "cases/platform_b/test_install_rpa_smoke.py",
+      "name": "test_install_rpa_smoke",
+      "module": "install",
+      "marks": [
+        "platform_b",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "quick"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_install_rpa_full.py",
+      "name": "test_install_rpa_full",
+      "module": "install",
+      "marks": [
+        "platform_b",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "upgrade"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_agent_online.py",
+      "name": "test_agent_online",
+      "module": "online",
+      "marks": [
+        "platform_b",
+        "online",
+        "smoke"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "first_login",
+        "relogin"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_agent_reconnect.py",
+      "name": "test_agent_reconnect",
+      "module": "online",
+      "marks": [
+        "platform_b",
+        "online",
+        "smoke",
+        "slow"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "network_drop",
+        "agent_restart"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_send_text_reply.py",
+      "name": "test_send_text_reply",
+      "module": "message",
+      "marks": [
+        "platform_b",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "greeting",
+        "stock",
+        "shipping"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_send_video_reply.py",
+      "name": "test_send_video_reply",
+      "module": "message",
+      "marks": [
+        "platform_b",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "intro_video"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_send_order_reply.py",
+      "name": "test_send_order_reply",
+      "module": "message",
+      "marks": [
+        "platform_b",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "order_query",
+        "order_status"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_transfer_to_human.py",
+      "name": "test_transfer_to_human",
+      "module": "transfer",
+      "marks": [
+        "platform_b",
+        "transfer",
+        "regression"
+      ],
+      "doc": "转人工：触发条件 → 转接 → 会话交接校验",
+      "scenarios": [
+        "user_request",
+        "forbidden_word"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_search_reply.py",
+      "name": "test_search_reply",
+      "module": "message",
+      "marks": [
+        "platform_b",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "keyword_hit",
+        "keyword_miss"
+      ]
+    },
+    {
+      "file": "cases/platform_b/test_batch_message.py",
+      "name": "test_batch_message",
+      "module": "message",
+      "marks": [
+        "platform_b",
+        "message",
+        "regression",
+        "stress"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "5_users",
+        "20_users"
+      ]
+    }
+  ],
+  "platform_c": [
+    {
+      "file": "cases/platform_c/test_install_rpa_smoke.py",
+      "name": "test_install_rpa_smoke",
+      "module": "install",
+      "marks": [
+        "platform_c",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "quick"
+      ]
+    },
+    {
+      "file": "cases/platform_c/test_agent_online.py",
+      "name": "test_agent_online",
+      "module": "online",
+      "marks": [
+        "platform_c",
+        "online",
+        "smoke"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "first_login",
+        "relogin"
+      ]
+    },
+    {
+      "file": "cases/platform_c/test_send_text_reply.py",
+      "name": "test_send_text_reply",
+      "module": "message",
+      "marks": [
+        "platform_c",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "greeting",
+        "stock",
+        "shipping"
+      ]
+    },
+    {
+      "file": "cases/platform_c/test_send_image_reply.py",
+      "name": "test_send_image_reply",
+      "module": "message",
+      "marks": [
+        "platform_c",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "product_pic",
+        "detail_pic"
+      ]
+    },
+    {
+      "file": "cases/platform_c/test_transfer_to_human.py",
+      "name": "test_transfer_to_human",
+      "module": "transfer",
+      "marks": [
+        "platform_c",
+        "transfer",
+        "regression"
+      ],
+      "doc": "转人工：触发条件 → 转接 → 会话交接校验",
+      "scenarios": [
+        "user_request",
+        "forbidden_word"
+      ]
+    },
+    {
+      "file": "cases/platform_c/test_idempotent_reply.py",
+      "name": "test_idempotent_reply",
+      "module": "message",
+      "marks": [
+        "platform_c",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "duplicate_msg",
+        "reorder_msg"
+      ]
+    }
+  ],
+  "platform_d": [
+    {
+      "file": "cases/platform_d/test_install_rpa_smoke.py",
+      "name": "test_install_rpa_smoke",
+      "module": "install",
+      "marks": [
+        "platform_d",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "quick"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_install_rpa_full.py",
+      "name": "test_install_rpa_full",
+      "module": "install",
+      "marks": [
+        "platform_d",
+        "install",
+        "smoke"
+      ],
+      "doc": "RPA 安装冒烟/全量流程：下载 → 安装 → 进程与窗口校验",
+      "scenarios": [
+        "main",
+        "upgrade"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_agent_online.py",
+      "name": "test_agent_online",
+      "module": "online",
+      "marks": [
+        "platform_d",
+        "online",
+        "smoke"
+      ],
+      "doc": "Agent 上线：启动被测代理 → 登录 → 上线状态与重连校验",
+      "scenarios": [
+        "first_login",
+        "relogin"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_send_text_reply.py",
+      "name": "test_send_text_reply",
+      "module": "message",
+      "marks": [
+        "platform_d",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "greeting",
+        "stock",
+        "shipping"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_send_card_reply.py",
+      "name": "test_send_card_reply",
+      "module": "message",
+      "marks": [
+        "platform_d",
+        "message",
+        "regression"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "item_card",
+        "coupon_card"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_transfer_to_human.py",
+      "name": "test_transfer_to_human",
+      "module": "transfer",
+      "marks": [
+        "platform_d",
+        "transfer",
+        "regression"
+      ],
+      "doc": "转人工：触发条件 → 转接 → 会话交接校验",
+      "scenarios": [
+        "user_request",
+        "forbidden_word"
+      ]
+    },
+    {
+      "file": "cases/platform_d/test_batch_message.py",
+      "name": "test_batch_message",
+      "module": "message",
+      "marks": [
+        "platform_d",
+        "message",
+        "regression",
+        "stress"
+      ],
+      "doc": "消息收发：文本/图片/卡片/订单回复与幂等、禁词、批量场景",
+      "scenarios": [
+        "5_users",
+        "20_users"
+      ]
+    }
+  ]
+}

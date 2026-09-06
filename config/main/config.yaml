@@ -1,0 +1,37 @@
+# AT Web 统一配置（演示数据版）
+# 所有值为演示用虚构数据；新增/删除平台只需改 config/platforms/platforms.json
+
+log:
+  level: INFO
+  file: app.log
+  dir: var/logs
+  max_bytes: 10485760
+  backup_count: 5
+
+server:
+  port: 6001
+  host: 0.0.0.0
+  debug: true
+
+# 登录账号（配置式账号 + session cookie，支持多账号）
+# 环境变量 AT_WEB_ADMIN_USER/AT_WEB_ADMIN_PASS、AT_WEB_USER2/AT_WEB_PASS2 可覆盖/追加
+web_users:
+  - username: admin
+    password: demo123
+  - username: demo
+    password: demo123
+
+# 当前环境：dev / prod（测试计划与账号配置按环境分组）
+current_env: dev
+
+# 执行引擎 — demo=内置模拟引擎（可替换为真实引擎实现）
+engine:
+  kind: demo
+  task_duration_min: 3.0
+  task_duration_max: 8.0
+  fail_rate: 0.15
+
+# 代理（演示模拟，无真实 mitmproxy）
+proxy:
+  url: http://127.0.0.1:8899
+  listen_port: 8082

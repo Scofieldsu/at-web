@@ -1,0 +1,102 @@
+@simple-prefix-cls: ~'@{namespace}-simple-menu';
+@prefix-cls: ~'@{namespace}-menu';
+
+.@{prefix-cls} {
+  &-dark&-vertical .@{simple-prefix-cls}__parent {
+    background-color: @sider-dark-bg-color;
+    > .@{prefix-cls}-submenu-title {
+      background-color: @sider-dark-bg-color;
+    }
+  }
+
+  &-dark&-vertical .@{simple-prefix-cls}__children,
+  &-dark&-popup .@{simple-prefix-cls}__children {
+    background-color: @sider-dark-lighten-bg-color;
+    > .@{prefix-cls}-submenu-title {
+      background-color: @sider-dark-lighten-bg-color;
+    }
+  }
+
+  .collapse-title {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.@{simple-prefix-cls} {
+  &-sub-title {
+    overflow: hidden;
+    transition: all 0.3s;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-tag {
+    display: inline-block;
+    position: absolute;
+    top: calc(50% - 8px);
+    right: 30px;
+    margin-right: 4px;
+    padding: 2px 3px;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 14px;
+
+    &--collapse {
+      top: 6px !important;
+      right: 2px;
+    }
+
+    &--dot {
+      top: calc(50% - 2px);
+      width: 6px;
+      height: 6px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    &--primary {
+      background-color: @primary-color;
+    }
+
+    &--error {
+      background-color: @error-color;
+    }
+
+    &--success {
+      background-color: @success-color;
+    }
+
+    &--warn {
+      background-color: @warning-color;
+    }
+
+    // 外部系统标签（cyan 与顶部菜单 meta.color 一致）
+    &--cyan {
+      background-color: #06b6d4;
+    }
+
+    // 环境标签专用样式（与测试参数页 a-tag 一致：浅底深字描边）
+    &--env {
+      padding: 2px 6px;
+      font-size: 12px;
+      line-height: 18px;
+      border: 1px solid;
+
+      &.@{simple-prefix-cls}-tag--primary {
+        background-color: #e6f4ff;
+        color: #1677ff;
+        border-color: #91caff;
+      }
+
+      &.@{simple-prefix-cls}-tag--warn {
+        background-color: #fff7e6;
+        color: #fa8c16;
+        border-color: #ffd591;
+      }
+    }
+  }
+}

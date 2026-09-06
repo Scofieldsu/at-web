@@ -1,0 +1,43 @@
+# 账号凭证配置 — 按平台分组（演示假账号）
+#
+# 使用方式:
+#   每个平台下配置 port、username、password。
+#   port 建议从各平台起始端口起连续分配，不要求连续但不可重复。
+#
+# 端口规范（演示）:
+#   平台A (platform_a): 起始端口 8222
+#   平台B (platform_b): 起始端口 9222
+#   平台C (platform_c): 起始端口 7222
+#   平台D (platform_d): 起始端口 6222
+#
+# 以下手机号均为虚构的演示号码（1380000000x 号段），密码为演示密码。
+
+platform_a:
+  accounts:
+    - port: 8223
+      username: "13800000001"
+      password: "demo123456"
+    - port: 8224
+      username: "13800000002"
+      password: "demo123456"
+
+platform_b:
+  accounts:
+    - port: 9222
+      username: "13800000003"
+      password: "demo123456"
+    - port: 9223
+      username: "13800000004"
+      password: "demo123456"
+
+platform_c:
+  accounts:
+    - port: 7222
+      username: "13800000001"
+      password: "demo123456"
+
+platform_d:
+  accounts:
+    - port: 6222
+      username: "13800000002"
+      password: "demo123456"

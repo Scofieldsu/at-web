@@ -1,0 +1,79 @@
+{
+  "_说明": "店铺与客服 Agent 配置 — 按环境（dev/prod）×平台分组。全部为演示虚构值：演示店铺/演示客服。",
+  "environments": {
+    "dev": {
+      "platform_a": {
+        "shops": {
+          "演示店铺A": {
+            "agents": ["演示客服A01", "演示客服A02", "演示客服A03"],
+            "default_agent": "演示客服A01",
+            "target_contact": "演示联系人-小张"
+          }
+        },
+        "default_agent": "演示客服A01"
+      },
+      "platform_b": {
+        "shops": {
+          "演示店铺B": {
+            "agents": ["演示客服B01", "演示客服B02"],
+            "default_agent": "演示客服B01",
+            "target_contact": "演示联系人-小李"
+          }
+        },
+        "default_agent": "演示客服B01"
+      },
+      "platform_c": {
+        "shops": {
+          "演示店铺C": {
+            "agents": ["演示客服C01"],
+            "default_agent": "演示客服C01",
+            "target_contact": "演示联系人-小陈"
+          }
+        },
+        "default_agent": "演示客服C01"
+      },
+      "platform_d": {
+        "shops": {
+          "演示店铺D": {
+            "agents": ["演示客服D01"],
+            "default_agent": "演示客服D01",
+            "target_contact": "演示联系人-小周"
+          }
+        },
+        "default_agent": "演示客服D01"
+      }
+    },
+    "prod": {
+      "platform_a": {
+        "shops": {
+          "演示店铺A（正式）": {
+            "agents": ["演示客服A11", "演示客服A12"],
+            "default_agent": "演示客服A11",
+            "target_contact": "演示联系人-小张"
+          }
+        },
+        "default_agent": "演示客服A11"
+      },
+      "platform_b": {
+        "shops": {
+          "演示店铺B（正式）": {
+            "agents": ["演示客服B11"],
+            "default_agent": "演示客服B11",
+            "target_contact": "演示联系人-小李"
+          }
+        },
+        "default_agent": "演示客服B11"
+      },
+      "platform_c": {
+        "shops": {
+          "演示店铺C（正式）": {
+            "agents": ["演示客服C11"],
+            "default_agent": "演示客服C11",
+            "target_contact": "演示联系人-小陈"
+          }
+        },
+        "default_agent": "演示客服C11"
+      }
+    }
+  }
+}

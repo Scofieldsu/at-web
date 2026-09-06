@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 206 207" width="206" height="207">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+    <linearGradient id="gear1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb"/>
+      <stop offset="100%" style="stop-color:#f5576c"/>
+    </linearGradient>
+    <linearGradient id="gear2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe"/>
+      <stop offset="100%" style="stop-color:#00f2fe"/>
+    </linearGradient>
+    <linearGradient id="circuit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b"/>
+      <stop offset="100%" style="stop-color:#38f9d7"/>
+    </linearGradient>
+  </defs>
+  <!-- 圆角背景 -->
+  <rect x="3" y="3" width="200" height="201" rx="48" ry="48" fill="url(#bg)" opacity="0.95"/>
+  <!-- 齿轮 - 自动化象征 -->
+  <g transform="translate(103, 88)">
+    <!-- 大齿轮 -->
+    <g transform="translate(-22, 0)">
+      <circle cx="0" cy="0" r="38" fill="none" stroke="url(#gear1)" stroke-width="4" opacity="0.7"/>
+      <circle cx="0" cy="0" r="28" fill="none" stroke="url(#gear1)" stroke-width="3"/>
+      <circle cx="0" cy="0" r="10" fill="url(#gear1)" opacity="0.9"/>
+      <!-- 齿轮齿 -->
+      <g stroke="url(#gear1)" stroke-width="4" stroke-linecap="round">
+        <line x1="0" y1="-42" x2="0" y2="-34"/>
+        <line x1="42" y1="0" x2="34" y2="0"/>
+        <line x1="0" y1="42" x2="0" y2="34"/>
+        <line x1="-42" y1="0" x2="-34" y2="0"/>
+        <line x1="29.7" y1="-29.7" x2="24" y2="-24"/>
+        <line x1="29.7" y1="29.7" x2="24" y2="24"/>
+        <line x1="-29.7" y1="29.7" x2="-24" y2="24"/>
+        <line x1="-29.7" y1="-29.7" x2="-24" y2="-24"/>
+      </g>
+    </g>
+    <!-- 小齿轮 -->
+    <g transform="translate(28, -8) scale(0.6)">
+      <circle cx="0" cy="0" r="30" fill="none" stroke="url(#gear2)" stroke-width="3.5"/>
+      <circle cx="0" cy="0" r="8" fill="url(#gear2)" opacity="0.9"/>
+      <g stroke="url(#gear2)" stroke-width="3.5" stroke-linecap="round">
+        <line x1="0" y1="-34" x2="0" y2="-27"/>
+        <line x1="34" y1="0" x2="27" y2="0"/>
+        <line x1="0" y1="34" x2="0" y2="27"/>
+        <line x1="-34" y1="0" x2="-27" y2="0"/>
+      </g>
+    </g>
+  </g>
+  <!-- 电路/连接线 - RPA 自动化 -->
+  <g stroke="url(#circuit)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8">
+    <polyline points="40,160 60,160 60,145 85,145"/>
+    <polyline points="120,168 140,168 140,155 160,155"/>
+    <circle cx="38" cy="160" r="3" fill="url(#circuit)"/>
+    <circle cx="88" cy="145" r="3" fill="url(#circuit)"/>
+    <circle cx="118" cy="168" r="3" fill="url(#circuit)"/>
+    <circle cx="163" cy="155" r="3" fill="url(#circuit)"/>
+  </g>
+  <!-- 文字 RPA -->
+  <g transform="translate(103, 158)">
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900"
+          font-size="30" fill="white" letter-spacing="4" opacity="0.95">RPA</text>
+  </g>
+  <!-- 装饰圆点 -->
+  <circle cx="38" cy="45" r="4" fill="#ff6b6b" opacity="0.6"/>
+  <circle cx="55" cy="35" r="3" fill="#ffd93d" opacity="0.6"/>
+  <circle cx="168" cy="45" r="4" fill="#6bcb77" opacity="0.6"/>
+  <circle cx="155" cy="35" r="3" fill="#4d96ff" opacity="0.6"/>
+</svg>

@@ -1,0 +1,146 @@
+// 现代化扁平菜单主题：浅色侧边栏，一级菜单深灰块、二级菜单浅灰底，无阴影无卡片
+@namespace: vben;
+@simple-prefix-cls: ~'@{namespace}-simple-menu';
+@prefix-cls: ~'@{namespace}-menu';
+
+// ── Linear 风格配色 ──────────────────────────────────────
+// 浅色侧边栏（Slate 100 蓝灰） + 极细边框 + 紫蓝点缀
+@sidebar-bg: #f1f5f9;                 // Linear 侧边栏底色（Slate 100 蓝灰）
+@sidebar-border: rgba(0,0,0,0.06);    // 极细半透明边框
+@parent-bg: #e2e8f0;                  // 一级菜单背景（Slate 200，比浅灰底略深）
+@parent-text: #18181b;                // 一级菜单文字（近黑）
+@parent-text-hover: #18181b;          // 悬停近黑
+@child-text: #71717a;                 // 子菜单文字（中灰）
+@child-text-hover: #3f3f46;           // 悬停加深
+@hover-bg: rgba(0,0,0,0.04);          // 悬停底色（半透明）
+@active-bg: rgba(99, 102, 241, 0.12); // 激活底色（紫蓝 12% 透明）
+@active-text: #6366f1;                // 激活文字（Indigo 500）
+@active-bar: #6366f1;                 // 激活左侧指示条（Indigo 500）
+@icon-color: #9ca3af;                 // 图标默认（浅灰）
+@icon-parent: #71717a;                // 父菜单图标
+
+// ── 浅色垂直菜单 ────────────────────────────────────────
+.@{prefix-cls} {
+  &-light&-vertical {
+    background-color: @sidebar-bg !important;
+    border-right: 1px solid @sidebar-border;
+
+    // ── 一级菜单：深灰块 + 深色大字重，与浅灰底二级菜单强对比 ──
+    .@{simple-prefix-cls}__parent {
+      background-color: transparent !important;
+
+      > .@{prefix-cls}-submenu-title {
+        background-color: @parent-bg !important;
+        color: @parent-text;
+        font-weight: 500;                // Linear 用 500 而非 700
+        font-size: 13px;                 // 更小更紧凑
+        letter-spacing: -0.01em;         // 略微压紧字间距
+        padding: 10px 12px !important;   // 窄侧边栏：左右内边距收到 12px
+        border-radius: 0;
+        border-top: none;                // Linear 不用分组边框
+        transition: background-color 0.15s ease, color 0.15s ease;
+
+        &:hover {
+          background-color: @hover-bg !important;
+          color: @parent-text-hover;
+        }
+
+        // 父菜单图标：Linear 风格
+        .anticon,
+        svg {
+          color: @icon-parent;
+          font-size: 18px;
+        }
+      }
+
+      // 展开态：文字转蓝，图标同步
+      &.@{prefix-cls}-submenu-open > .@{prefix-cls}-submenu-title {
+        color: @active-text;
+
+        .anticon,
+        svg {
+          color: @active-bar;
+        }
+      }
+    }
+
+    // ── 子菜单（二级）：更深缩进 + 更小字号 + 激活左指示条 ──
+    .@{simple-prefix-cls}__children {
+      background-color: transparent !important;
+      padding: 4px 0 8px 0;
+
+      > .@{prefix-cls}-item,
+      > .@{prefix-cls}-submenu-title {
+        background-color: transparent !important;
+        color: @child-text;
+        font-weight: 400;
+        font-size: 13px;                     // Linear 紧凑字号
+        line-height: 1.4;
+        min-height: 34px;                    // 更紧凑的行高
+        display: flex;
+        align-items: center;
+        padding-left: 36px !important;   // 窄侧边栏：缩进从 44px 收到 36px
+        padding-top: 7px !important;
+        padding-bottom: 7px !important;
+        margin-bottom: 0;                    // 去掉间隙，Linear 更紧密
+        border-radius: 0;
+        border-left: 2px solid transparent;
+        border-bottom: none;                 // Linear 不用分隔线
+        transition: background-color 0.12s ease, color 0.12s ease,
+          border-color 0.12s ease;
+
+        &:hover {
+          background-color: @hover-bg !important;
+          color: @child-text-hover;
+        }
+
+        .anticon,
+        svg {
+          color: @icon-color;
+          font-size: 15px;
+        }
+      }
+
+      // 激活项：Linear 风格（紫蓝半透明底 + 淡紫文字 + 2px 指示条）
+      > .@{prefix-cls}-item-selected,
+      > .@{prefix-cls}-item-active {
+        background-color: @active-bg !important;
+        color: @active-text !important;
+        font-weight: 500;
+        border-left-color: @active-bar;
+
+        .anticon,
+        svg {
+          color: @active-text !important;
+        }
+
+        &:hover {
+          background-color: @active-bg !important;
+        }
+      }
+    }
+  }
+
+  // 折叠弹出的子菜单
+  &-light&-popup {
+    .@{simple-prefix-cls}__children {
+      background-color: @sidebar-bg !important;
+    }
+  }
+}
+
+// 折叠态标题
+.@{simple-prefix-cls} {
+  .collapse-title {
+    color: @child-text;
+    font-size: 11px;
+  }
+}
+
+// ── 内容区背景：Linear 风格浅灰 ────────────────────────────
+// 浅色侧边栏配浅灰内容区，层次分明
+.@{namespace}-layout-content,
+.@{namespace}-page-wrapper,
+.@{namespace}-page-wrapper-content {
+  background-color: #fafafa;
+}

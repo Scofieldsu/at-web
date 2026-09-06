@@ -1,0 +1,27 @@
+# ── Python ────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ── Node / 前端 ────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/packages/*/node_modules/
+frontend/internal/*/node_modules/
+frontend/.turbo/
+frontend/node_modules/.cache/
+*.tsbuildinfo
+
+# ── 运行时生成（演示数据/日志/结果，启动自动重建）──
+var/
+
+# ── 日志与临时文件 ──────────────────────────
+*.log
+*.old
+.DS_Store
+
+# ── IDE ────────────────────────────────────
+.idea/
+.vscode/
+*.swp

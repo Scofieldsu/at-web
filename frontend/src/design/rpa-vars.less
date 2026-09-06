@@ -1,0 +1,103 @@
+/* RPA 业务页面 CSS 变量（Linear 风格）
+   迁移自旧前端，现已和 linear-components.css 对齐。
+   分亮色/暗色两套，Vben 通过 html[data-theme] 切换。 */
+
+:root,
+html[data-theme='light'] {
+  /* ── 背景色 ── */
+  --bg-page: #f8f9fa;              /* 页面底色（比纯白暖一点） */
+  --bg-card: #ffffff;              /* 卡片背景 */
+  --bg-card-alt: #fafafa;          /* 次要卡片/表头背景 */
+  --bg-input: #ffffff;             /* 输入框背景 */
+  --bg-header: #ffffff;            /* 顶部背景 */
+  --bg-sidebar: #f1f5f9;           /* 侧边栏浅色（Slate 100，和 menu-theme.less 一致） */
+  --bg-hover: rgba(0, 0, 0, 0.02); /* hover 半透明 */
+  --bg-active: rgba(99, 102, 241, 0.12); /* 激活态背景 */
+
+  /* ── 边框色 ── */
+  --border-color: #e5e5e5;         /* 主边框（和 linear-components 一致） */
+  --border-input: #d4d4d8;         /* 输入框边框 */
+  --border-light: #f0f0f0;         /* 浅边框 */
+
+  /* ── 文字色 ── */
+  --text-primary: #1c2024;         /* 主文字（深灰黑） */
+  --text-secondary: #60646c;       /* 次要文字（中灰） */
+  --text-muted: #9ca3af;           /* 辅助文字（浅灰） */
+  --text-disabled: #d4d4d8;        /* 禁用文字 */
+
+  /* ── 主题色（Linear Indigo + Radix） ── */
+  --accent: #6366f1;               /* 主色 Indigo 500 */
+  --accent-hover: #4f46e5;         /* hover Indigo 600 */
+  --accent-active: #4338ca;        /* active Indigo 700 */
+  --accent-bg: rgba(99, 102, 241, 0.08); /* 半透明背景 */
+
+  /* ── 语义色 ── */
+  --success-color: #30a46c;        /* Radix Green 9 */
+  --warning-color: #f76b15;        /* Radix Orange 9 */
+  --error-color: #e5484d;          /* Radix Red 9 */
+  --info-color: #0090ff;           /* Radix Blue 9 */
+
+  /* 旧变量兼容（页面代码里还在用） */
+  --bg-card-alt: var(--bg-card-alt); /* 避免重复定义警告 */
+}
+
+html[data-theme='dark'] {
+  /* ── 背景色 ── */
+  --bg-page: #0d0f13;              /* 深色页面底 */
+  --bg-card: #1e2028;              /* 深色卡片 */
+  --bg-card-alt: #262a34;          /* 深色次要卡片 */
+  --bg-input: #262a34;             /* 深色输入框 */
+  --bg-header: #1a1c23;            /* 深色顶部 */
+  --bg-sidebar: #16181e;           /* 深色侧边栏 */
+  --bg-hover: rgba(255, 255, 255, 0.05); /* 深色 hover */
+  --bg-active: rgba(99, 102, 241, 0.2);  /* 深色激活态 */
+
+  /* ── 边框色 ── */
+  --border-color: #2a2d38;         /* 深色主边框 */
+  --border-input: #333745;         /* 深色输入框边框 */
+  --border-light: #202329;         /* 深色浅边框 */
+
+  /* ── 文字色 ── */
+  --text-primary: #e5e7eb;         /* 深色主文字 */
+  --text-secondary: #9ca3af;       /* 深色次要文字 */
+  --text-muted: #6b7280;           /* 深色辅助文字 */
+  --text-disabled: #4b5563;        /* 深色禁用文字 */
+
+  /* ── 主题色（深色下稍微亮一点） ── */
+  --accent: #6d70f6;               /* 深色主色（比亮色亮一档） */
+  --accent-hover: #7c7ffa;         /* 深色 hover */
+  --accent-active: #5b5ef0;        /* 深色 active */
+  --accent-bg: rgba(109, 112, 246, 0.15); /* 深色半透明背景 */
+
+  /* ── 语义色（深色下稍微调亮） ── */
+  --success-color: #3bb97e;
+  --warning-color: #ff8c3a;
+  --error-color: #f26a6f;
+  --info-color: #1fa3ff;
+}
+
+/* 通用卡片样式（Ant Design Vue）——适配 CSS 变量主题，供 .theme-card 复用 */
+.theme-card.ant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.theme-card.ant-card .ant-card-head {
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  min-height: 48px;
+}
+.theme-card.ant-card .ant-table {
+  background: transparent;
+}
+.theme-card.ant-card .ant-table-thead > tr > th {
+  background: var(--bg-card-alt);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+.theme-card.ant-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-color);
+}
+.theme-card.ant-card .ant-table-tbody > tr:hover > td {
+  background: var(--bg-card-alt);
+}

@@ -1,0 +1,60 @@
+{
+  "_说明": "Mock 中控消息模板 — 演示模板（文本/图片/卡片/订单/转人工）。新增模板：加一个对象即可，前端下拉自动出现。",
+  "text_reply": {
+    "key": "text_reply",
+    "name": "文本回复",
+    "description": "下发一条纯文本回复",
+    "frame_type": "reply-message",
+    "params": [
+      { "key": "content", "label": "回复内容", "default": "您好，感谢您的咨询（演示）" }
+    ],
+    "data_fields": {
+      "msg_list": [{ "record_id": "demo-0001", "type": "TEXT", "content": "您好，感谢您的咨询（演示）", "transfer_to_human": false }]
+    }
+  },
+  "image_reply": {
+    "key": "image_reply",
+    "name": "图片回复",
+    "description": "下发一张演示图片",
+    "frame_type": "image-message",
+    "params": [
+      { "key": "image_path", "label": "图片地址", "default": "/static/demo_img_1.png" }
+    ],
+    "data_fields": { "image_path": "/static/demo_img_1.png" }
+  },
+  "card_push": {
+    "key": "card_push",
+    "name": "商品卡片推送",
+    "description": "推送一个演示商品卡片",
+    "frame_type": "card-message",
+    "params": [
+      { "key": "product_id", "label": "商品ID", "default": "demo-sku-001" },
+      { "key": "product_name", "label": "商品名称", "default": "演示商品：无线蓝牙耳机" }
+    ],
+    "data_fields": {
+      "product_id": "demo-sku-001",
+      "product_name": "演示商品：无线蓝牙耳机",
+      "card_url": "/static/demo_card_1.png"
+    }
+  },
+  "order_notify": {
+    "key": "order_notify",
+    "name": "订单通知",
+    "description": "推送一条演示订单状态通知",
+    "frame_type": "order-notify",
+    "params": [
+      { "key": "order_text", "label": "订单内容", "default": "演示订单：demo-sku-001 × 1，已发货" }
+    ],
+    "data_fields": { "order_text": "演示订单：demo-sku-001 × 1，已发货" }
+  },
+  "transfer_human": {
+    "key": "transfer_human",
+    "name": "转人工指令",
+    "description": "触发会话转人工",
+    "frame_type": "transfer-to-human",
+    "params": [
+      { "key": "reason", "label": "转接原因", "default": "演示转接" }
+    ],
+    "data_fields": { "reason": "演示转接", "transfer_to_human": true }
+  }
+}

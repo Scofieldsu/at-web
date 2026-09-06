@@ -1,0 +1,25 @@
+{
+  "_说明": "通用配置 — 对象存储、下载路径、远程机器等（全部为演示虚构值）。对象存储/远程机器在演示版中仅作为展示配置，不会被真实访问。",
+  "minio": {
+    "_说明": "对象存储配置（演示值），实际访问通过 配置管理 页查看；生产环境请通过环境变量覆盖",
+    "endpoint": "10.0.0.100:9000",
+    "use_ssl": false,
+    "access_key": "demokey",
+    "secret_key": "demosecret",
+    "bucket_platforms": {
+      "platform_a": "platform_a",
+      "platform_b": "platform_b",
+      "platform_c": "platform_c",
+      "platform_d": "platform_d"
+    }
+  },
+  "install": {
+    "downloads_dir": "C:\\demo-agent\\downloads"
+  },
+  "remote_machines": {
+    "_说明": "远程安装目标机器配置（演示网段 10.0.0.x）",
+    "10.0.0.11": { "username": "demo_user", "password": "demo_pass" },
+    "10.0.0.12": { "username": "demo_user", "password": "demo_pass" },
+    "10.0.0.13": { "username": "demo_user", "password": "demo_pass" }
+  }
+}

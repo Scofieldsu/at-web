@@ -18,8 +18,9 @@
           <div class="flex flex-col items-center mt-5 w-full">
             <div class="login-hero-main animate-fade-in">AT Web</div>
             <div class="login-hero-sub animate-fade-in" style="animation-delay: 0.2s">
-              <span class="hero-zdh">自动化</span><span class="hero-ce">测</span><span class="hero-shi">试</span><span class="hero-ping">平</span><span class="hero-tai">台</span>
+              <span class="hero-zdh">自动化</span><span class="hero-ceshi">测试</span><span class="hero-gzt">工作台</span>
             </div>
+            <div class="login-hero-tagline animate-fade-in" style="animation-delay: 0.3s">All Your Tests, Automated &amp; Intelligent</div>
           </div>
         </div>
         <div class="flex w-full xl:w-7/12">
@@ -308,7 +309,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  // 左侧两行大字：AT Web / 自动化测试平台（与系统 Indigo/Info 色彩设计统一）
+  // 左侧两行大字：AT Web / 自动化测试工作台（与系统 Indigo/Info 色彩设计统一）
   .login-hero-main {
     font-family: 'Orbitron', 'Arial Black', sans-serif;
     font-size: 76px;
@@ -321,20 +322,38 @@
     background-clip: text;
     filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.45));
   }
-  // 副标题「自动化测试平台」：60px；自动化=Indigo 主色；测试平台逐字取测试参数页四平台标题色
-  // 测=平台A红 #e5484d / 试=平台B蓝 #0090ff / 平=平台C橙 #f76b15 / 台=平台D绿 #30a46c
+  // 副标题「自动化测试工作台」：60px；自动化/测试=系统 info 蓝 #0090ff；工作台=四平台色渐变（三字同一条渐变）
   .login-hero-sub {
-    margin-top: 64px;
+    margin-top: 36px;
     font-size: 60px;
     font-weight: 600;
     letter-spacing: 2px;
+    text-align: center;
     filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.3));
   }
-  .hero-zdh { color: #0090ff; }   /* 自动化 — 系统 info 蓝 */
-  .hero-ce  { color: #e5484d; }   /* 测 — 红 */
-  .hero-shi { color: #f76b15; }   /* 试 — 橙（与原「平」互换） */
-  .hero-ping{ color: #0090ff; }   /* 平 — 蓝（与原「试」互换） */
-  .hero-tai { color: #30a46c; }   /* 台 — 绿 */
+  .hero-zdh { color: #0090ff; }     /* 自动化 — 系统 info 蓝 */
+  .hero-ceshi { color: #0090ff; }   /* 测试 — 与自动化同色 */
+  .hero-gzt {                       /* 工作台 — 四平台色渐变：红→橙→蓝→绿 */
+    background: linear-gradient(90deg, #e5484d 0%, #f76b15 33%, #0090ff 66%, #30a46c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  // 标语行：四平台色横向渐变（红→橙→蓝→绿），含义「所有测试均可在本工作台自动且智能完成」
+  // 与副标题同在 items-center 列容器内居中，且 letter-spacing 一致（2px）→ 两行视觉中心对齐
+  .login-hero-tagline {
+    margin-top: 24px;
+    font-family: 'Orbitron', 'Arial Black', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-align: center;
+    background: linear-gradient(90deg, #e5484d 0%, #f76b15 33%, #0090ff 66%, #30a46c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 10px rgba(0, 144, 255, 0.35));
+  }
 
   // 表单整体：去掉多余内边距，由内部 item 控制间距
   .login-form {

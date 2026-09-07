@@ -1,5 +1,8 @@
 <template>
   <div class="weaknet-container">
+    <!-- 顶部行：左 弱网状态（宽对齐下方 3G 卡片右缘）/ 右 使用说明 -->
+    <a-row :gutter="[16, 16]">
+      <a-col :xs="24" :sm="12" :md="16" :lg="12">
     <!-- 顶部状态栏 -->
     <a-card :class="['status-card', 'theme-card', { running: isRunning }]">
       <template #title>
@@ -51,6 +54,91 @@
         </a-alert>
       </div>
     </a-card>
+      </a-col>
+
+      <a-col :xs="24" :sm="12" :md="8" :lg="12">
+      <!-- 使用说明 -->
+      <a-card class="theme-card">
+        <template #title>
+          <span class="sec-title tint-purple"><QuestionCircleOutlined />使用说明</span>
+        </template>
+
+        <a-alert type="info" show-icon style="margin-bottom: 16px">
+          <template #message>重要提示</template>
+          <template #description>
+            <!-- 2×2 紧凑网格：文案精简，高度比原 4 行列表减半 -->
+            <div class="tips-grid">
+              <div class="tips-item">弱网工具需<strong>管理员权限</strong>运行</div>
+              <div class="tips-item">仅影响匹配过滤规则的流量</div>
+              <div class="tips-item">测试完成后<strong>务必停止</strong>弱网</div>
+              <div class="tips-item">演示环境不实际影响流量</div>
+            </div>
+          </template>
+        </a-alert>
+
+        <a-collapse v-model:activeKey="activeKeys">
+          <a-collapse-panel header="安装状态检查" key="4">
+            <div v-if="installStatus">
+              <a-descriptions :column="1" bordered size="small">
+                <a-descriptions-item label="安装状态">
+                  <a-tag :color="installStatus.installed ? 'success' : 'error'">
+                    {{ installStatus.installed ? '已安装' : '未安装' }}
+                  </a-tag>
+                </a-descriptions-item>
+                <a-descriptions-item label="可执行文件">
+                  <code>{{ installStatus.path }}</code>
+                </a-descriptions-item>
+                <a-descriptions-item label="版本">{{ installStatus.version || '-' }}</a-descriptions-item>
+                <a-descriptions-item label="消息">{{ installStatus.message }}</a-descriptions-item>
+              </a-descriptions>
+              <a-button
+                v-if="!installStatus.installed"
+                type="link"
+                style="margin-top: 8px"
+                @click="showInstallGuide"
+              >
+                查看安装指南
+              </a-button>
+            </div>
+            <a-button type="primary" size="small" @click="checkInstallation">刷新状态</a-button>
+          </a-collapse-panel>
+
+          <a-collapse-panel header="预设配置说明" key="2">
+            <a-descriptions :column="1" bordered size="small">
+              <a-descriptions-item label="基线">无弱网注入，用于对比测试基线性能</a-descriptions-item>
+              <a-descriptions-item label="3G 网络">
+                延迟 200ms，丢包 5% - 模拟 3G 网络环境，适合轻度弱网测试
+              </a-descriptions-item>
+              <a-descriptions-item label="2G 网络">
+                <strong>延迟 500ms，丢包 10% - 推荐用于日常弱网测试</strong>
+              </a-descriptions-item>
+              <a-descriptions-item label="极差网络">
+                延迟 1000ms，丢包 20% - 极端弱网场景，测试系统降级能力
+              </a-descriptions-item>
+              <a-descriptions-item label="断网模拟">
+                100% 丢包 - 模拟完全断网，测试断网后的恢复逻辑
+              </a-descriptions-item>
+            </a-descriptions>
+          </a-collapse-panel>
+
+          <a-collapse-panel header="过滤规则语法" key="3">
+            <p>使用 WinDivert 过滤语法，常用规则示例：</p>
+            <pre
+              style="background: #f5f5f5; padding: 12px; border-radius: 4px; font-size: 12px"
+            ><code># 只影响 Mock 服务流量（推荐，演示端口 8765）
+tcp.DstPort == 8765 or tcp.SrcPort == 8765
+
+# 只影响出站流量
+outbound and tcp.DstPort == 8765
+
+# 只影响某个网段
+(ip.DstAddr >= 10.0.1.0 and ip.DstAddr <= 10.0.1.255)</code></pre>
+          </a-collapse-panel>
+
+        </a-collapse>
+      </a-card>
+      </a-col>
+    </a-row>
 
     <!-- 快捷预设卡片 -->
     <a-card class="theme-card" style="margin-top: 16px">
@@ -173,83 +261,12 @@
         </a-form-item>
       </a-form>
     </a-card>
-
-    <!-- 使用说明 -->
-    <a-card class="theme-card" style="margin-top: 16px">
-      <template #title>
-        <span class="sec-title tint-purple"><QuestionCircleOutlined />使用说明</span>
-      </template>
-
-      <a-alert type="warning" show-icon style="margin-bottom: 16px">
-        <template #message>重要提示</template>
-        <template #description>
-          <ul style="margin: 0; padding-left: 20px; text-align: left">
-            <li>Clumsy 需要<strong>管理员权限</strong>运行，请确保后端服务以管理员身份启动</li>
-            <li>弱网仅影响匹配过滤规则的流量，不会影响浏览器和其他软件</li>
-            <li>测试完成后请<strong>务必停止</strong>弱网，否则影响后续测试</li>
-            <li>如遇启动失败，请检查杀毒软件是否拦截了 WinDivert 驱动</li>
-          </ul>
-        </template>
-      </a-alert>
-
-      <a-collapse>
-        <a-collapse-panel header="预设配置说明" key="2">
-          <a-descriptions :column="1" bordered size="small">
-            <a-descriptions-item label="基线">无弱网注入，用于对比测试基线性能</a-descriptions-item>
-            <a-descriptions-item label="3G 网络">
-              延迟 200ms，丢包 5% - 模拟 3G 网络环境，适合轻度弱网测试
-            </a-descriptions-item>
-            <a-descriptions-item label="2G 网络">
-              <strong>延迟 500ms，丢包 10% - 推荐用于日常弱网测试</strong>
-            </a-descriptions-item>
-            <a-descriptions-item label="极差网络">
-              延迟 1000ms，丢包 20% - 极端弱网场景，测试系统降级能力
-            </a-descriptions-item>
-            <a-descriptions-item label="断网模拟">
-              100% 丢包 - 模拟完全断网，测试断网后的恢复逻辑
-            </a-descriptions-item>
-          </a-descriptions>
-        </a-collapse-panel>
-
-        <a-collapse-panel header="过滤规则语法" key="3">
-          <p>使用 WinDivert 过滤语法，常用规则示例：</p>
-          <pre
-            style="background: #f5f5f5; padding: 12px; border-radius: 4px; font-size: 12px"
-          ><code># 只影响 Mock 服务流量（推荐，演示端口 8765）
-tcp.DstPort == 8765 or tcp.SrcPort == 8765
-
-# 只影响出站流量
-outbound and tcp.DstPort == 8765
-
-# 只影响某个网段
-(ip.DstAddr >= 10.0.1.0 and ip.DstAddr <= 10.0.1.255)</code></pre>
-        </a-collapse-panel>
-
-        <a-collapse-panel header="安装状态检查" key="4">
-          <div v-if="installStatus">
-            <a-descriptions :column="1" bordered size="small">
-              <a-descriptions-item label="安装状态">
-                <a-tag :color="installStatus.installed ? 'success' : 'error'">
-                  {{ installStatus.installed ? '已安装' : '未安装' }}
-                </a-tag>
-              </a-descriptions-item>
-              <a-descriptions-item label="可执行文件">
-                <code>{{ installStatus.path }}</code>
-              </a-descriptions-item>
-              <a-descriptions-item label="版本">{{ installStatus.version || '-' }}</a-descriptions-item>
-              <a-descriptions-item label="消息">{{ installStatus.message }}</a-descriptions-item>
-            </a-descriptions>
-          </div>
-          <a-button type="primary" size="small" @click="checkInstallation">刷新状态</a-button>
-        </a-collapse-panel>
-      </a-collapse>
-    </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import {
   WifiOutlined,
   ThunderboltOutlined,
@@ -269,6 +286,8 @@ const presets = ref<any[]>([]);
 const starting = ref(false);
 const stopping = ref(false);
 const installStatus = ref<any>(null);
+// 使用说明折叠面板：默认展开「安装状态检查」
+const activeKeys = ref<string[]>(['4']);
 
 const customConfig = ref({
   filter_rule: 'tcp.DstPort == 8765 or tcp.SrcPort == 8765',
@@ -432,6 +451,24 @@ async function checkInstallation() {
   }
 }
 
+function showInstallGuide() {
+  Modal.info({
+    title: '弱网工具安装指南',
+    width: 600,
+    content: `
+      请按以下步骤部署弱网工具：
+
+      1. 以管理员身份运行 PowerShell
+      2. 确认后端服务已以管理员身份启动（需要管理员权限）
+      3. 将 weaknet.exe 放置于项目 tools/weaknet/ 目录下
+      4. 等待安装完成后刷新此页面
+
+      说明：
+      演示环境下弱网工具不实际影响网络流量，仅用于界面与交互演示。
+    `,
+  });
+}
+
 onMounted(() => {
   fetchStatus();
   loadPresets();
@@ -462,6 +499,32 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
+}
+
+/* 重要提示：2×2 紧凑网格（小圆点 + 12px 小字），节约竖向空间 */
+.tips-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 16px;
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: left;
+
+  .tips-item {
+    position: relative;
+    padding-left: 12px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 7px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #1677ff;
+    }
+  }
 }
 
 .status-detail {

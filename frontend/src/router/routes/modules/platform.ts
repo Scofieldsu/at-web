@@ -132,9 +132,9 @@ const test: AppRouteModule = {
     },
     {
       path: 'ui-test',
-      name: 'UiTest',
-      component: () => import('@/views/platform/UiTest.vue'),
-      meta: { title: '压力测试', icon: 'ant-design:desktop-outlined' },
+      name: 'Stress',
+      component: () => import('@/views/platform/Stress.vue'),
+      meta: { title: '压力测试', icon: 'ant-design:dashboard-outlined' },
     },
     {
       path: 'schedule',

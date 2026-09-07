@@ -3,12 +3,12 @@
 - /api/* 统一 session 鉴权（登录接口本身除外）
 - 模块自动发现注册（server/modules/*）
 - 托管前端构建产物 frontend/dist（hash 路由 SPA 回退）
-- 占位外链页 /ext/*（演示用，替代源工程内网外链）
+- 外链演示页 /ext/*（JIRA 风格缺陷跟踪 + 文件存储，静态页替代源工程内网外链）
 """
 import os
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory, render_template_string
+from flask import Flask, jsonify, request, send_from_directory
 
 from core.config import AppConfig, load_platforms
 from core.logging_config import setup_logging, get_logger
@@ -18,45 +18,12 @@ from .modules.auth import is_authenticated
 
 logger = get_logger(__name__)
 
+# 外链演示页：静态整页（server/static/ext/*.html），参考 JIRA / 文件存储系统设计
 _EXT_PAGES = {
-    "vm-console": {
-        "title": "VM 控制台",
-        "desc": "演示占位页 — 源系统中此处链接到内网虚拟机管理控制台。",
-    },
-    "minio": {
-        "title": "对象存储（MinIO）",
-        "desc": "演示占位页 — 源系统中此处链接到内网对象存储控制台。",
-    },
+    "defects": "defects.html",
+    "files": "files.html",
 }
-
-_EXT_PAGE_HTML = """<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<title>{{ title }}</title>
-<style>
-  body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
-         background: #f8f9fa; color: #1c2024; }
-  .wrap { max-width: 640px; margin: 120px auto; background: #fff; border: 1px solid #e5e5e5;
-          border-radius: 4px; padding: 32px; }
-  .tag { display: inline-block; background: rgba(99,102,241,0.12); color: #6366f1;
-         border: 1px solid rgba(99,102,241,0.25); border-radius: 4px;
-         font-size: 12px; padding: 2px 8px; margin-bottom: 12px; }
-  h1 { font-size: 18px; margin: 0 0 8px; }
-  p { font-size: 13px; color: #60646c; line-height: 1.7; }
-  a { color: #6366f1; text-decoration: none; font-size: 13px; }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <span class="tag">DEMO</span>
-  <h1>{{ title }}</h1>
-  <p>{{ desc }}</p>
-  <p><a href="javascript:history.back()">← 返回控制台</a></p>
-</div>
-</body>
-</html>
-"""
+_EXT_STATIC_DIR = Path(__file__).parent / "static" / "ext"
 
 
 def create_app(app_config: AppConfig | None = None) -> Flask:
@@ -128,14 +95,13 @@ def create_app(app_config: AppConfig | None = None) -> Flask:
     from .modules import mock_ws as _mock_ws
     _mock_ws.auto_start()
 
-    # ---- 占位外链页（演示）----
-    for key, info in _EXT_PAGES.items():
-        endpoint = f"ext_{key}"
-
-        def _ext_view(_title=info["title"], _desc=info["desc"]):
-            return render_template_string(_EXT_PAGE_HTML, title=_title, desc=_desc)
-
-        app.add_url_rule(f"/ext/{key}", endpoint=endpoint, view_func=_ext_view)
+    # ---- 外链演示页（/ext/* → server/static/ext/*.html）----
+    for key, filename in _EXT_PAGES.items():
+        app.add_url_rule(
+            f"/ext/{key}",
+            endpoint=f"ext_{key}",
+            view_func=lambda f=filename: send_from_directory(str(_EXT_STATIC_DIR), f),
+        )
 
     @app.route("/health")
     def health():

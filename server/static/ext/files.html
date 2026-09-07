@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文件存储</title>
+<style>
+  :root {
+    --orange: #f76b15;      /* 主色：文件存储品牌橙 */
+    --orange-dark: #d95a0e;
+    --orange-light: #fff3ec;
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --border: #e3e6eb;
+    --line: #eef0f3;
+    --text: #1f2329;
+    --muted: #646a73;
+    --faint: #8a919c;
+    --blue: #0090ff;
+    --green: #30a46c;
+    --red: #e5484d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  button { font-family: inherit; cursor: pointer; }
+  input { font-family: inherit; font-size: 13px; color: var(--text); }
+  a { text-decoration: none; }
+
+  /* ===== 顶栏 ===== */
+  .topbar {
+    height: 52px; background: var(--card); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 18px; gap: 16px; position: sticky; top: 0; z-index: 50;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15.5px; }
+  .brand .mark {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #ff9d5c, var(--orange));
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;
+  }
+  .topbar .search {
+    width: 380px; max-width: 34vw; height: 32px; border: 1px solid var(--border); border-radius: 16px;
+    padding: 0 14px 0 34px; outline: none; background: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a919c' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.5' y2='16.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 11px center;
+  }
+  .topbar .search:focus { border-color: var(--orange); background-color: #fff; }
+  .topbar .spacer { flex: 1; }
+  .btn {
+    height: 34px; padding: 0 15px; border-radius: 6px; border: 1px solid transparent;
+    font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-primary:hover { background: var(--orange-dark); }
+  .btn-ghost { background: #fff; color: var(--text); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff;
+    font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex: none;
+  }
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 6px; border: none; background: transparent;
+    font-size: 16px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted);
+  }
+  .icon-btn:hover { background: var(--bg); }
+
+  /* ===== 布局 ===== */
+  .layout { display: flex; min-height: calc(100vh - 52px); }
+  .sidebar { width: 210px; flex: none; background: var(--card); border-right: 1px solid var(--line); padding: 14px 10px; display: flex; flex-direction: column; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 12px; border-radius: 8px;
+    font-size: 13.5px; cursor: pointer; user-select: none; color: var(--text);
+  }
+  .nav-item .ic { width: 18px; text-align: center; font-size: 15px; }
+  .nav-item:hover { background: var(--bg); }
+  .nav-item.active { background: var(--orange-light); color: var(--orange-dark); font-weight: 600; }
+  .nav-section { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .6px; padding: 14px 12px 6px; }
+  .nav-item .count { margin-left: auto; font-size: 11px; color: var(--faint); }
+  .sidebar .foot { margin-top: auto; padding: 10px 12px; font-size: 12px; color: var(--faint); line-height: 1.6; }
+
+  .main { flex: 1; min-width: 0; padding: 18px 22px 40px; }
+
+  /* ===== 存储用量卡 ===== */
+  .usage-card {
+    background: linear-gradient(120deg, #fff7f1 0%, #ffffff 55%);
+    border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+  }
+  .usage-card .big { font-size: 26px; font-weight: 800; color: var(--orange-dark); }
+  .usage-card .big small { font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+  .usage-card .quota { width: 260px; }
+  .usage-card .quota .bar { height: 8px; border-radius: 4px; background: #eceef1; overflow: hidden; }
+  .usage-card .quota .bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #ffa262, var(--orange)); }
+  .usage-card .quota .lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .usage-stats { display: flex; gap: 26px; margin-left: auto; }
+  .usage-stat .n { font-size: 16px; font-weight: 700; }
+  .usage-stat .t { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ===== 工具条 ===== */
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .crumbs { display: flex; align-items: center; gap: 6px; font-size: 13.5px; flex: 1; min-width: 0; flex-wrap: wrap; }
+  .crumbs a { color: var(--muted); }
+  .crumbs a:hover { color: var(--orange); }
+  .crumbs .sep { color: var(--faint); }
+  .crumbs .cur { font-weight: 700; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: #fff; }
+  .seg button {
+    height: 32px; padding: 0 12px; border: none; background: transparent; font-size: 13px; color: var(--muted);
+  }
+  .seg button.on { background: var(--orange-light); color: var(--orange-dark); font-weight: 600; }
+
+  /* ===== 表格视图 ===== */
+  .table-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 12px; color: var(--muted); font-weight: 600;
+    padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fafbfc; white-space: nowrap;
+  }
+  thead th .sort { color: var(--faint); margin-left: 4px; font-size: 10px; }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: #fafbfc; }
+  tbody tr:last-child td { border-bottom: none; }
+  .fname { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .file-ic {
+    width: 34px; height: 34px; border-radius: 8px; flex: none; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fname .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .fname .path { font-size: 11.5px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 420px; }
+  .share-tag {
+    display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 10px;
+    font-size: 11.5px; font-weight: 600; margin-left: 8px;
+  }
+  .tag-pub { color: var(--green); background: #e9f7f0; }
+  .tag-priv { color: var(--faint); background: #f1f2f4; }
+  .muted { color: var(--muted); }
+  .ops { display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+  tbody tr:hover .ops { opacity: 1; }
+  .ops button {
+    width: 28px; height: 28px; border-radius: 6px; border: 1px solid transparent; background: transparent;
+    font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center;
+  }
+  .ops button:hover { background: var(--orange-light); border-color: #ffd9c2; color: var(--orange-dark); }
+  .ops button.danger:hover { background: #fdebec; border-color: #f6c9cb; color: var(--red); }
+  .tfoot { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: #fafbfc; }
+  .empty { padding: 44px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  /* ===== 网格视图 ===== */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .gcard {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 14px;
+    cursor: pointer; transition: all .15s;
+  }
+  .gcard:hover { border-color: #ffb98a; box-shadow: 0 4px 14px rgba(247, 107, 21, .12); transform: translateY(-2px); }
+  .gcard .ic { font-size: 38px; margin-bottom: 10px; }
+  .gcard .nm { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gcard .meta { font-size: 11.5px; color: var(--faint); margin-top: 5px; display: flex; justify-content: space-between; }
+
+  /* ===== 上下文菜单 ===== */
+  .ctx {
+    position: fixed; z-index: 120; background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(31, 35, 41, .16); padding: 5px; min-width: 150px; display: none;
+  }
+  .ctx.show { display: block; }
+  .ctx button {
+    width: 100%; text-align: left; border: none; background: transparent; padding: 8px 12px;
+    font-size: 13px; border-radius: 5px; display: flex; align-items: center; gap: 9px;
+  }
+  .ctx button:hover { background: var(--bg); }
+  .ctx button.danger { color: var(--red); }
+  .ctx button.danger:hover { background: #fdebec; }
+
+  /* ===== 分享弹窗 ===== */
+  .modal-wrap { position: fixed; inset: 0; z-index: 110; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-wrap.show { display: flex; }
+  .modal { width: 480px; max-width: 100%; background: #fff; border-radius: 12px; box-shadow: 0 16px 48px rgba(31,35,41,.25); overflow: hidden; }
+  .modal .mh { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+  .modal .mh h3 { font-size: 15px; }
+  .modal .mh .close { margin-left: auto; width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; font-size: 16px; color: var(--muted); }
+  .modal .mh .close:hover { background: var(--bg); }
+  .modal .mb { padding: 18px 20px; }
+  .share-line { display: flex; gap: 8px; }
+  .share-line input {
+    flex: 1; height: 34px; border: 1px solid var(--border); border-radius: 7px; padding: 0 12px;
+    background: var(--bg); color: var(--muted); outline: none;
+  }
+  .modal .mb .tip { font-size: 12px; color: var(--faint); margin-top: 10px; line-height: 1.6; }
+  .modal .mf { padding: 14px 20px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; right: 20px; bottom: 24px; z-index: 200; background: var(--text); color: #fff;
+    font-size: 13px; padding: 10px 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(31,35,41,.3);
+    opacity: 0; transform: translateY(8px); transition: all .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.ok { background: #248a5b; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .usage-stats { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <div class="brand"><span class="mark">🗄</span>文件存储</div>
+  <input class="search" id="searchBox" placeholder="搜索文件或文件夹（演示）">
+  <div class="spacer"></div>
+  <button class="btn btn-ghost" onclick="toast('演示环境：上传功能不可用')">⬆ 上传</button>
+  <button class="btn btn-primary" onclick="newFolder()">＋ 新建文件夹</button>
+  <button class="icon-btn" title="通知">🔔</button>
+  <span class="avatar">yu</span>
+</header>
+
+<div class="layout">
+  <!-- ===== 侧栏 ===== -->
+  <aside class="sidebar">
+    <div class="nav-item active"><span class="ic">📁</span>我的文件</div>
+    <div class="nav-item"><span class="ic">🕘</span>最近访问</div>
+    <div class="nav-item"><span class="ic">🔗</span>共享给我<span class="count">6</span></div>
+    <div class="nav-item"><span class="ic">⭐</span>已收藏</div>
+    <div class="nav-item"><span class="ic">🗑</span>回收站<span class="count">3</span></div>
+    <div class="nav-section">我的存储</div>
+    <div class="nav-item"><span class="ic">📦</span>用例产物</div>
+    <div class="nav-item"><span class="ic">🖼</span>测试截图</div>
+    <div class="nav-item"><span class="ic">📄</span>日志归档</div>
+    <div class="nav-item"><span class="ic">📦</span>测试安装包</div>
+    <div class="foot">演示环境 · 对象存储演示数据<br>容量 100 GB（配额）</div>
+  </aside>
+
+  <!-- ===== 主区 ===== -->
+  <main class="main">
+    <!-- 存储用量 -->
+    <div class="usage-card">
+      <div>
+        <div class="big" id="usedBig">-</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">已用空间</div>
+      </div>
+      <div class="quota">
+        <div class="bar"><i id="quotaBar" style="width:0%"></i></div>
+        <div class="lbl"><span id="quotaLbl">-</span><span>100 GB 配额</span></div>
+      </div>
+      <div class="usage-stats">
+        <div class="usage-stat"><div class="n" id="statFiles">-</div><div class="t">文件</div></div>
+        <div class="usage-stat"><div class="n" id="statDirs">-</div><div class="t">文件夹</div></div>
+        <div class="usage-stat"><div class="n" id="statShared">-</div><div class="t">已共享</div></div>
+      </div>
+    </div>
+
+    <!-- 工具条：面包屑 + 排序 + 视图切换 -->
+    <div class="toolbar">
+      <div class="crumbs" id="crumbs"></div>
+      <select id="sortBy" style="height:32px;border:1px solid var(--border);border-radius:7px;padding:0 8px;background:#fff;outline:none">
+        <option value="name">按名称</option>
+        <option value="size">按大小</option>
+        <option value="time">按时间</option>
+      </select>
+      <div class="seg">
+        <button id="viewList" class="on" onclick="setView('list')">☰ 列表</button>
+        <button id="viewGrid" onclick="setView('grid')">▦ 网格</button>
+      </div>
+    </div>
+
+    <!-- 列表视图 -->
+    <div class="table-card" id="listWrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:46%">名称</th>
+            <th>大小</th>
+            <th>所有者</th>
+            <th>共享</th>
+            <th>修改时间</th>
+            <th style="width:110px"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none">此文件夹为空</div>
+      <div class="tfoot">
+        <span id="footInfo"></span>
+        <span>对象存储演示 · 单桶 atw-artifacts</span>
+      </div>
+    </div>
+
+    <!-- 网格视图 -->
+    <div class="grid" id="gridWrap" style="display:none"></div>
+  </main>
+</div>
+
+<!-- ===== 右键菜单 ===== -->
+<div class="ctx" id="ctx">
+  <button onclick="ctxAct('open')">📂 打开</button>
+  <button onclick="ctxAct('dl')">⬇ 下载</button>
+  <button onclick="ctxAct('share')">🔗 分享</button>
+  <button onclick="ctxAct('fav')">⭐ 收藏 / 取消收藏</button>
+  <button class="danger" onclick="ctxAct('del')">🗑 删除</button>
+</div>
+
+<!-- ===== 分享弹窗 ===== -->
+<div class="modal-wrap" id="shareWrap">
+  <div class="modal">
+    <div class="mh">
+      <h3>分享链接</h3>
+      <button class="close" onclick="closeShare()">✕</button>
+    </div>
+    <div class="mb">
+      <div class="share-line">
+        <input id="shareUrl" readonly>
+        <button class="btn btn-primary" onclick="copyShare()">复制</button>
+      </div>
+      <div class="tip">链接有效期 7 天（演示）· 任何拥有链接的人可查看与下载。<br>对象： <span id="shareName" style="color:var(--text);font-weight:600"></span></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" onclick="closeShare()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 演示数据：桶 atw-artifacts 的目录树 ============ */
+const QUOTA_GB = 100;
+let idSeq = 100;
+const nid = () => 'n' + (idSeq++);
+
+function file(name, size, owner, time, share, fav) {
+  return { id: nid(), kind: 'file', name, size, owner, time, share: !!share, fav: !!fav, children: null };
+}
+function dir(name, owner, time, children) {
+  return { id: nid(), kind: 'dir', name, size: null, owner, time, share: false, fav: false, children };
+}
+
+const ROOT = dir('我的文件', 'yu', '2026-09-07 09:00', [
+  dir('用例产物', '于工', '2026-09-06 22:10', [
+    dir('2026-09-06', '于工', '2026-09-06 22:10', [
+      file('run_jd_msg_2g.json', 2.4e6, '于工', '2026-09-06 21:40', false),
+      file('run_qianniu_order.json', 1.8e6, '于工', '2026-09-06 20:15', false),
+      file('report_summary.pdf', 480e3, '张测试', '2026-09-06 22:10', true),
+    ]),
+    dir('2026-09-05', '于工', '2026-09-05 23:40', [
+      file('run_dy_lite_send.json', 3.1e6, '于工', '2026-09-05 23:02', false),
+      file('run_pdd_regress.json', 5.6e6, '李测试', '2026-09-05 23:40', false),
+    ]),
+  ]),
+  dir('测试截图', '张测试', '2026-09-06 18:30', [
+    file('weaknet_2g_latency.png', 640e3, '张测试', '2026-09-06 18:30', true),
+    file('login_workbench_new.png', 920e3, '于工', '2026-09-05 15:22', true, true),
+    file('mock_ws_connections.png', 512e3, '李测试', '2026-09-04 11:08', false),
+    file('dist_machines_panel.png', 455e3, '宋工', '2026-09-03 09:47', false),
+  ]),
+  dir('日志归档', '宋工', '2026-09-05 02:00', [
+    file('atweb_2026-09-04.zip', 12.8e6, '宋工', '2026-09-05 02:00', false),
+    file('atweb_2026-09-03.zip', 11.2e6, '宋工', '2026-09-04 02:00', false),
+    file('crash_cycle_20260813.zip', 6.4e6, '王后端', '2026-08-13 18:30', false),
+  ]),
+  dir('测试安装包', '于工', '2026-09-02 16:20', [
+    file('qianniu_v9.32.00.exe', 268e6, '于工', '2026-09-02 16:20', true),
+    file('jingdong_pc_v11.5.477.exe', 312e6, '于工', '2026-09-01 10:12', true),
+    file('douyin_lite_v9.1.8.apk', 88e6, '李测试', '2026-08-30 14:44', false),
+  ]),
+  file('weaknet_demo_2g.pcap', 4.2e6, '张测试', '2026-09-06 17:55', true, true),
+  file('test_report_week_36.pdf', 1.3e6, '张测试', '2026-09-04 19:20', true),
+  file('README_对象存储使用规范.md', 8200, '宋工', '2026-08-28 10:00', true, true),
+]);
+
+/* ============ 状态 ============ */
+let path = [ROOT];          // 面包屑栈
+let view = 'list';
+let sortBy = 'name';
+let query = '';
+let ctxTarget = null;       // 右键对象
+let trash = [];
+
+/* ============ 工具 ============ */
+const $ = (id) => document.getElementById(id);
+const cur = () => path[path.length - 1];
+
+function fmtSize(b) {
+  if (b == null) return '-';
+  if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
+  if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+  if (b >= 1024) return (b / 1024).toFixed(0) + ' KB';
+  return b + ' B';
+}
+function fmtTime(t) {
+  if (!t) return '-';
+  const now = new Date('2026-09-07 12:00:00');
+  const d = new Date(t.replace(' ', 'T'));
+  const diff = Math.floor((now - d) / 3600000);
+  if (diff < 1) return '今天';
+  if (diff < 24) return t.slice(11);
+  if (diff < 48) return '昨天 ' + t.slice(11);
+  return t.slice(0, 16);
+}
+function fileIcon(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) return { ic: '🖼', bg: '#e8f1fd', fg: 'var(--blue)' };
+  if (['zip', 'rar', '7z', 'tar'].includes(ext)) return { ic: '📦', bg: '#fff3ec', fg: 'var(--orange)' };
+  if (['exe', 'msi', 'apk', 'dmg'].includes(ext)) return { ic: '⚙', bg: '#f0eafd', fg: '#6554c0' };
+  if (['json', 'yaml', 'yml', 'xml', 'txt', 'md'].includes(ext)) return { ic: '📄', bg: '#e9f7f0', fg: 'var(--green)' };
+  if (['log', 'pcap'].includes(ext)) return { ic: '🧾', bg: '#f1f2f4', fg: 'var(--muted)' };
+  return { ic: '📄', bg: '#f1f2f4', fg: 'var(--muted)' };
+}
+function shareTag(node) {
+  if (node.kind === 'dir') return '<span class="muted" style="font-size:12px">-</span>';
+  return node.share
+    ? '<span class="share-tag tag-pub">🔗 公开</span>'
+    : '<span class="share-tag tag-priv">私有</span>';
+}
+function ownerAv(name) {
+  const colors = { 'yu': '#0090ff', '于工': '#6554c0', '宋工': '#0052cc', '张测试': '#087443', '李测试': '#99450d', '王后端': '#bf2746' };
+  const c = colors[name] || '#8a919c';
+  return `<span class="avatar" style="width:22px;height:22px;font-size:10px;background:${c}">${name.slice(0, 2)}</span> ${name}`;
+}
+
+/* ============ 渲染 ============ */
+function renderCrumbs() {
+  $('crumbs').innerHTML = path.map((n, i) =>
+    i === path.length - 1
+      ? `<span class="cur">${i === 0 ? '🏠 ' : ''}${n.name}</span>`
+      : `<a href="javascript:void(0)" onclick="goTo(${i})">${i === 0 ? '🏠 ' : ''}${n.name}</a><span class="sep">/</span>`
+  ).join('');
+}
+function goTo(i) {
+  path = path.slice(0, i + 1);
+  render();
+}
+
+function sortNodes(list) {
+  const arr = [...list];
+  arr.sort((a, b) => {
+    if (a.kind !== b.kind) return a.kind === 'dir' ? -1 : 1; // 文件夹在前
+    if (sortBy === 'size') return (b.size || 0) - (a.size || 0);
+    if (sortBy === 'time') return b.time.localeCompare(a.time);
+    return a.name.localeCompare(b.name, 'zh');
+  });
+  return arr;
+}
+
+function render() {
+  renderCrumbs();
+  renderUsage();
+  const q = query.trim().toLowerCase();
+  let list = sortNodes(cur().children || []);
+  if (q) list = list.filter((n) => n.name.toLowerCase().includes(q));
+  renderList(list);
+  renderGrid(list);
+  $('footInfo').textContent = `${(cur().children || []).length} 项`;
+}
+
+function renderList(list) {
+  $('tbody').innerHTML = list.map((n) => {
+    const f = fileIcon(n.name);
+    return `<tr ondblclick="openNode('${n.id}')" onclick="rowClick(event,'${n.id}')">
+      <td><span class="fname">
+        <span class="file-ic" style="background:${f.bg}">${n.kind === 'dir' ? '📁' : f.ic}</span>
+        <span>
+          <span class="nm">${n.name}${n.fav ? ' <span title="已收藏">⭐</span>' : ''}</span>
+          ${n.kind === 'file' ? '' : ''}
+        </span>
+      </span></td>
+      <td class="muted">${n.kind === 'dir' ? fmtSize(dirSize(n)) : fmtSize(n.size)}</td>
+      <td class="muted" style="white-space:nowrap">${ownerAv(n.owner)}</td>
+      <td>${shareTag(n)}</td>
+      <td class="muted" style="white-space:nowrap">${fmtTime(n.time)}</td>
+      <td>
+        <span class="ops">
+          <button title="下载" onclick="event.stopPropagation();dl('${n.id}')">⬇</button>
+          <button title="分享" onclick="event.stopPropagation();openShare('${n.id}')">🔗</button>
+          <button class="danger" title="删除" onclick="event.stopPropagation();delNode('${n.id}')">🗑</button>
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
+  $('empty').style.display = list.length ? 'none' : 'block';
+}
+
+function renderGrid(list) {
+  $('gridWrap').innerHTML = list.map((n) => {
+    const f = fileIcon(n.name);
+    return `<div class="gcard" ondblclick="openNode('${n.id}')" onclick="rowClick(event,'${n.id}')">
+      <div class="ic">${n.kind === 'dir' ? '📁' : f.ic}</div>
+      <div class="nm" title="${n.name}">${n.name}${n.fav ? ' ⭐' : ''}</div>
+      <div class="meta"><span>${n.kind === 'dir' ? fmtSize(dirSize(n)) : fmtSize(n.size)}</span><span>${fmtTime(n.time)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function dirSize(node) {
+  let s = 0;
+  (node.children || []).forEach((c) => { s += c.kind === 'dir' ? dirSize(c) : (c.size || 0); });
+  return s;
+}
+
+function renderUsage() {
+  let files = 0, shared = 0, used = 0;
+  (function walk(n) {
+    (n.children || []).forEach((c) => {
+      if (c.kind === 'dir') { walk(c); }
+      else { files++; used += c.size || 0; if (c.share) shared++; }
+    });
+  })(ROOT);
+  const dirs = (function count(n) {
+    let d = 0; (n.children || []).forEach((c) => { if (c.kind === 'dir') { d++; d += count(c); } }); return d;
+  })(ROOT);
+  $('usedBig').innerHTML = fmtSize(used) + `<small>/ 100 GB</small>`;
+  $('quotaBar').style.width = Math.max(2, Math.min(100, used / (QUOTA_GB * 1073741824) * 100)) + '%';
+  $('quotaLbl').textContent = `已用 ${fmtSize(used)}`;
+  $('statFiles').textContent = files;
+  $('statDirs').textContent = dirs;
+  $('statShared').textContent = shared;
+}
+
+function setView(v) {
+  view = v;
+  $('viewList').classList.toggle('on', v === 'list');
+  $('viewGrid').classList.toggle('on', v === 'grid');
+  $('listWrap').style.display = v === 'list' ? 'block' : 'none';
+  $('gridWrap').style.display = v === 'grid' ? 'grid' : 'none';
+}
+
+function findNode(id, node) {
+  node = node || ROOT;
+  if (node.id === id) return node;
+  for (const c of (node.children || [])) {
+    const r = findNode(id, c);
+    if (r) return r;
+  }
+  return null;
+}
+function findParent(id, node) {
+  node = node || ROOT;
+  for (let i = 0; i < (node.children || []).length; i++) {
+    const c = node.children[i];
+    if (c.id === id) return { parent: node, index: i };
+    const r = findParent(id, c);
+    if (r) return r;
+  }
+  return null;
+}
+
+function openNode(id) {
+  const n = findNode(id);
+  if (n && n.kind === 'dir') {
+    query = ''; $('searchBox').value = '';
+    path.push(n);
+    render();
+  } else if (n) {
+    toast(`演示环境：下载 ${n.name}`, false);
+  }
+}
+function dl(id) { toast(`演示环境：下载 ${findNode(id).name}`, false); }
+
+/* 单击：文件→下载提示；文件夹→无（双击打开） */
+function rowClick(e, id) {
+  if (e.detail === 1) {
+    const n = findNode(id);
+    if (n && n.kind === 'file') toast(`演示环境：预览/下载 ${n.name}`, false);
+  }
+}
+
+/* ============ 操作 ============ */
+function newFolder() {
+  const name = prompt('新建文件夹名称：', '新文件夹');
+  if (!name) return;
+  cur().children.unshift(dir(name, 'yu', '2026-09-07 12:00', []));
+  render();
+  toast(`已创建文件夹「${name}」（演示）`, true);
+}
+function delNode(id) {
+  const n = findNode(id);
+  if (!n || n.id === ROOT.id) return;
+  if (!confirm(`确认删除「${n.name}」？（演示数据）`)) return;
+  const loc = findParent(id);
+  trash.push(n);
+  loc.parent.children.splice(loc.index, 1);
+  if (path.some((p) => p === n)) {
+    const idx = path.findIndex((p) => p.id === n.id);
+    path = path.slice(0, Math.max(1, idx));
+  }
+  render();
+  toast(`已移入回收站：${n.name}（演示）`, true);
+}
+
+/* 右键菜单 */
+document.addEventListener('contextmenu', (e) => {
+  const tr = e.target.closest('tr, .gcard');
+  const id = tr ? (tr.getAttribute('ondblclick') || '').match(/openNode\('([^']+)'\)/) : null;
+  if (!id) return;
+  ctxTarget = id;
+  e.preventDefault();
+  const ctx = $('ctx');
+  ctx.classList.add('show');
+  const w = 160, h = ctx.offsetHeight || 190;
+  ctx.style.left = Math.min(e.clientX, window.innerWidth - w - 8) + 'px';
+  ctx.style.top = Math.min(e.clientY, window.innerHeight - h - 8) + 'px';
+});
+document.addEventListener('click', () => $('ctx').classList.remove('show'));
+function ctxAct(act) {
+  if (!ctxTarget) return;
+  const n = findNode(ctxTarget);
+  if (act === 'open') openNode(ctxTarget);
+  else if (act === 'dl') dl(ctxTarget);
+  else if (act === 'share') openShare(ctxTarget);
+  else if (act === 'fav') { n.fav = !n.fav; render(); toast(n.fav ? '已收藏' : '已取消收藏（演示）', true); }
+  else if (act === 'del') delNode(ctxTarget);
+  $('ctx').classList.remove('show');
+}
+
+/* 分享 */
+let shareTarget = null;
+function openShare(id) {
+  shareTarget = id;
+  const n = findNode(id);
+  $('shareUrl').value = `https://files.atweb.demo/s/${id.slice(0, 8)}-${n.name.replace(/\s+/g, '-')}`;
+  $('shareName').textContent = n.name;
+  $('shareWrap').classList.add('show');
+}
+function closeShare() { $('shareWrap').classList.remove('show'); }
+function copyShare() {
+  const el = $('shareUrl');
+  el.select();
+  try { document.execCommand('copy'); } catch (e) { /* 演示：忽略 */ }
+  toast('分享链接已复制（演示）', true);
+}
+
+/* 搜索 / 排序 */
+$('searchBox').addEventListener('input', (e) => { query = e.target.value; render(); });
+$('sortBy').addEventListener('change', (e) => { sortBy = e.target.value; render(); });
+
+/* Toast */
+let toastTimer = null;
+function toast(msg, ok) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (ok ? ' ok' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeShare(); });
+
+render();
+</script>
+</body>
+</html>

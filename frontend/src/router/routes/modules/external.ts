@@ -8,10 +8,11 @@ import { LAYOUT } from '@/router/constant';
 // 命中就调 openWindow 新标签打开、不做路由跳转，因此这些 path 不会真的被导航。
 // 组件挂 FrameBlank（空白占位）只为满足路由表要求。
 //
-// 注意：演示版指向后端内置占位页（/ext/*），真实环境替换为对应控制台地址即可。
+// 注意：演示版指向后端内置演示页（/ext/*，JIRA 风格缺陷跟踪 + 文件存储风格），
+// 真实环境替换为对应系统控制台地址即可。
 // 用 origin 拼绝对 URL：dev 由 vite 的 /ext 代理转发到 Flask，prod 由 Flask 同源直出。
-const VM_CONSOLE_URL = `${window.location.origin}/ext/vm-console`;
-const MINIO_CONSOLE_URL = `${window.location.origin}/ext/minio`;
+const DEFECTS_URL = `${window.location.origin}/ext/defects`;
+const FILES_URL = `${window.location.origin}/ext/files`;
 
 // orderNo 80 > 系统配置的 70，排在菜单最底部。
 // 注意：ROLE 模式的排序读 meta.orderNo（见 store/modules/permission.ts），
@@ -36,16 +37,16 @@ const external: AppRouteModule = {
   },
   children: [
     {
-      path: VM_CONSOLE_URL,
-      name: 'ExternalVmConsole',
+      path: DEFECTS_URL,
+      name: 'ExternalDefects',
       component: () => import('@/views/sys/iframe/FrameBlank.vue'),
-      meta: { title: 'VM 控制台', icon: 'ion:desktop-outline' },
+      meta: { title: '缺陷跟踪平台', icon: 'ion:bug-outline' },
     },
     {
-      path: MINIO_CONSOLE_URL,
-      name: 'ExternalMinio',
+      path: FILES_URL,
+      name: 'ExternalFiles',
       component: () => import('@/views/sys/iframe/FrameBlank.vue'),
-      meta: { title: 'MinIO', icon: 'ion:cube-outline' },
+      meta: { title: '文件存储', icon: 'ion:folder-open-outline' },
     },
   ],
 };

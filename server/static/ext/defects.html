@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>缺陷跟踪平台</title>
+<style>
+  :root {
+    --blue: #0052cc;
+    --blue-dark: #0747a6;
+    --blue-light: #deebff;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #dce1e8;
+    --line: #ebecf0;
+    --text: #172b4d;
+    --muted: #6b778c;
+    --faint: #87909d;
+    --green: #36b37e;
+    --orange: #ff8b00;
+    --red: #de350c;
+    --purple: #6554c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; font-size: 13px; color: var(--text); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ===== 顶栏 ===== */
+  .topbar {
+    height: 48px; background: var(--blue); color: #fff;
+    display: flex; align-items: center; padding: 0 16px; gap: 14px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar .logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; letter-spacing: .5px; }
+  .topbar .logo .bug {
+    width: 26px; height: 26px; border-radius: 6px; background: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .proj-select {
+    display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.35); border-radius: 4px; font-size: 13px; cursor: pointer;
+  }
+  .proj-select:hover { background: rgba(255,255,255,.1); }
+  .proj-select .key { background: rgba(255,255,255,.18); border-radius: 3px; padding: 1px 6px; font-size: 12px; font-weight: 600; }
+  .proj-select .chev { font-size: 10px; opacity: .8; }
+  .topbar .search {
+    flex: 1; max-width: 460px; margin-left: 8px; height: 32px;
+    background: rgba(255,255,255,.95); border: none; border-radius: 4px;
+    padding: 0 12px 0 32px; outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b778c' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.5' y2='16.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 10px center;
+  }
+  .topbar .spacer { flex: 1; }
+  .btn {
+    height: 32px; padding: 0 14px; border-radius: 4px; border: 1px solid transparent;
+    font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-white { background: #fff; color: var(--blue); border-color: #fff; }
+  .btn-white:hover { background: var(--blue-light); }
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--border); }
+  .btn-ghost:hover { background: #f4f5f7; }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+  }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 4px; border: none; background: transparent;
+    color: #fff; font-size: 15px; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,.15); }
+
+  /* ===== 布局：侧栏 + 主区 ===== */
+  .layout { display: flex; min-height: calc(100vh - 48px); }
+  .sidebar {
+    width: 216px; flex: none; background: var(--card); border-right: 1px solid var(--line);
+    padding: 14px 10px; display: flex; flex-direction: column;
+  }
+  .nav-section { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .6px; padding: 10px 10px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px; height: 32px; padding: 0 10px;
+    border-radius: 4px; color: var(--text); font-size: 13.5px; cursor: pointer; user-select: none;
+  }
+  .nav-item .ic { width: 18px; text-align: center; font-size: 14px; }
+  .nav-item:hover { background: #f4f5f7; }
+  .nav-item.active { background: var(--blue-light); color: var(--blue-dark); font-weight: 600; }
+  .nav-item .count { margin-left: auto; font-size: 11px; color: var(--faint); background: #f4f5f7; border-radius: 9px; padding: 0 7px; }
+  .proj-card {
+    margin-top: 14px; border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; background: var(--bg);
+  }
+  .proj-card .t { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+  .proj-card .desc { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+  .sidebar .foot { margin-top: auto; padding: 8px 10px; font-size: 12px; color: var(--faint); }
+
+  .main { flex: 1; min-width: 0; padding: 20px 24px 40px; }
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; }
+  .page-head .sub { color: var(--muted); font-size: 13px; }
+
+  /* ===== 筛选条 ===== */
+  .filterbar {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .filterbar label { font-size: 12px; color: var(--muted); }
+  .filterbar select {
+    height: 30px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px;
+    background: #fff; min-width: 110px; outline: none;
+  }
+  .filterbar select:focus { border-color: var(--blue); }
+  .filterbar .clear { margin-left: auto; font-size: 12.5px; color: var(--blue); cursor: pointer; background: none; border: none; font-weight: 600; }
+  .filterbar .clear:hover { text-decoration: underline; }
+
+  /* ===== 状态统计条 ===== */
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    padding: 8px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;
+    transition: all .15s;
+  }
+  .stat:hover { border-color: var(--blue); }
+  .stat.on { border-color: var(--blue); background: var(--blue-light); }
+  .stat .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .stat .n { font-weight: 700; font-size: 15px; }
+  .stat .t { font-size: 12px; color: var(--muted); }
+
+  /* ===== 问题表格 ===== */
+  .table-card { background: var(--card); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 11.5px; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: 9px 12px; border-bottom: 1px solid var(--line); background: #fafbfc;
+    white-space: nowrap;
+  }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: middle; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: #f4f5f7; }
+  tbody tr:last-child td { border-bottom: none; }
+  .icell { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .icell .type-ic {
+    width: 22px; height: 22px; border-radius: 50%; flex: none; font-size: 12px;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .icell .sum { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .key { color: var(--blue); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px;
+    border-radius: 11px; font-size: 12px; font-weight: 600; border: 1px solid; white-space: nowrap;
+  }
+  .prio { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; white-space: nowrap; }
+  .prio .pdot { width: 10px; height: 10px; flex: none; }
+  .who { display: flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12.5px; }
+  .muted { color: var(--muted); }
+  .empty { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+  .tfoot { display: flex; justify-content: space-between; padding: 10px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: #fafbfc; }
+
+  /* ===== 右侧详情抽屉 ===== */
+  .mask {
+    position: fixed; inset: 0; background: rgba(9,30,66,.45); z-index: 90;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .mask.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: -520px; width: 500px; max-width: 92vw; height: 100vh;
+    background: #fff; z-index: 100; box-shadow: -8px 0 24px rgba(9,30,66,.18);
+    transition: right .22s ease; display: flex; flex-direction: column;
+  }
+  .drawer.show { right: 0; }
+  .dr-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+  .dr-head .row1 { display: flex; align-items: center; gap: 8px; }
+  .dr-head .close {
+    margin-left: auto; width: 28px; height: 28px; border-radius: 4px; border: none;
+    background: transparent; font-size: 16px; color: var(--muted);
+  }
+  .dr-head .close:hover { background: #f4f5f7; }
+  .dr-head h2 { font-size: 16px; margin-top: 8px; line-height: 1.45; }
+  .dr-body { flex: 1; overflow-y: auto; padding: 16px 18px; }
+  .kv { display: grid; grid-template-columns: 84px 1fr; gap: 8px 12px; font-size: 13px; margin-bottom: 18px; }
+  .kv .k { color: var(--muted); }
+  .sec { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin: 18px 0 8px; }
+  .desc-box { font-size: 13px; line-height: 1.7; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; }
+  .comment { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .comment:last-of-type { border-bottom: none; }
+  .comment .cbody { flex: 1; min-width: 0; }
+  .comment .cmeta { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  .comment .cmeta b { color: var(--text); font-weight: 600; }
+  .comment .ctext { font-size: 13px; line-height: 1.6; }
+  .dr-foot { border-top: 1px solid var(--line); padding: 12px 18px; }
+  .dr-foot textarea {
+    width: 100%; height: 64px; resize: none; border: 1px solid var(--border); border-radius: 4px;
+    padding: 8px 10px; outline: none;
+  }
+  .dr-foot textarea:focus { border-color: var(--blue); }
+  .dr-foot .actions { display: flex; justify-content: flex-end; margin-top: 8px; gap: 8px; }
+
+  /* ===== 新建缺陷弹窗 ===== */
+  .modal-wrap {
+    position: fixed; inset: 0; z-index: 110; display: none;
+    align-items: flex-start; justify-content: center; padding-top: 8vh;
+  }
+  .modal-wrap.show { display: flex; }
+  .modal {
+    width: 560px; max-width: 94vw; max-height: 84vh; overflow-y: auto;
+    background: #fff; border-radius: 8px; box-shadow: 0 16px 48px rgba(9,30,66,.3);
+  }
+  .modal .mh { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+  .modal .mh h3 { font-size: 15px; }
+  .modal .mh .close {
+    margin-left: auto; width: 28px; height: 28px; border-radius: 4px; border: none;
+    background: transparent; font-size: 16px; color: var(--muted);
+  }
+  .modal .mh .close:hover { background: #f4f5f7; }
+  .modal .mb { padding: 16px 20px; }
+  .frow { margin-bottom: 14px; }
+  .frow label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; }
+  .frow label .req { color: var(--red); }
+  .frow input[type=text], .frow textarea, .frow select {
+    width: 100%; border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; outline: none; background: #fff;
+  }
+  .frow input:focus, .frow textarea:focus, .frow select:focus { border-color: var(--blue); }
+  .frow textarea { height: 96px; resize: none; }
+  .frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal .mf { padding: 14px 20px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; right: 20px; bottom: 24px; z-index: 200;
+    background: var(--text); color: #fff; font-size: 13px;
+    padding: 10px 16px; border-radius: 6px; box-shadow: 0 8px 24px rgba(9,30,66,.3);
+    opacity: 0; transform: translateY(8px); transition: all .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.ok { background: #087443; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .topbar .search { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <div class="logo"><span class="bug">🐞</span>缺陷跟踪平台</div>
+  <div class="proj-select">
+    <span class="key">ATW</span><span>自动化测试工作台</span><span class="chev">▾</span>
+  </div>
+  <input class="search" placeholder="搜索问题、过滤器或项目（演示）">
+  <div class="spacer"></div>
+  <button class="btn btn-white" onclick="openModal()">＋ 新建</button>
+  <button class="icon-btn" title="通知">🔔</button>
+  <span class="avatar" style="background:#6554c0">yu</span>
+</header>
+
+<div class="layout">
+  <!-- ===== 侧栏 ===== -->
+  <aside class="sidebar">
+    <div class="nav-item active"><span class="ic">⚙</span>过滤器</div>
+    <div class="nav-item"><span class="ic">📊</span>看板</div>
+    <div class="nav-item"><span class="ic">📅</span>时间线</div>
+    <div class="nav-item"><span class="ic">🗂</span>报表</div>
+    <div class="nav-item"><span class="ic">📈</span>度量</div>
+    <div class="nav-section">项目</div>
+    <div class="nav-item"><span class="ic">🚩</span>ATW<span class="count">22</span></div>
+    <div class="nav-item"><span class="ic">⚙️</span>设置</div>
+    <div class="proj-card">
+      <div class="t"><span class="key" style="background:var(--blue-light);color:var(--blue-dark);padding:2px 7px;border-radius:3px">ATW</span>自动化测试工作台</div>
+      <div class="desc">RPA 自动化测试平台的缺陷跟踪演示项目，数据为内置演示数据。</div>
+    </div>
+    <div class="foot">演示环境 · 数据不会保存</div>
+  </aside>
+
+  <!-- ===== 主区 ===== -->
+  <main class="main">
+    <div class="page-head">
+      <h1>全部问题</h1>
+      <span class="sub">项目 ATW · 当前过滤器：未关闭的问题</span>
+    </div>
+
+    <!-- 状态统计条（点击筛选） -->
+    <div class="stats" id="stats"></div>
+
+    <!-- 筛选条 -->
+    <div class="filterbar">
+      <label>状态</label>
+      <select id="fStatus"><option value="">全部</option></select>
+      <label>优先级</label>
+      <select id="fPriority"><option value="">全部</option></select>
+      <label>指派给</label>
+      <select id="fAssignee"><option value="">全部</option></select>
+      <button class="clear" onclick="clearFilters()">清除筛选</button>
+    </div>
+
+    <!-- 问题表格 -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:52px">问题</th>
+            <th>摘要</th>
+            <th>状态</th>
+            <th>优先级</th>
+            <th>指派给</th>
+            <th>报告人</th>
+            <th>更新时间</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none">没有符合筛选条件的问题</div>
+      <div class="tfoot">
+        <span id="footInfo"></span>
+        <span>演示数据 · 每页 50 条</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===== 详情抽屉 ===== -->
+<div class="mask" id="mask" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head">
+    <div class="row1">
+      <span class="type-ic" id="drTypeIc" style="width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff"></span>
+      <span class="key" id="drKey"></span>
+      <span id="drStatusPill"></span>
+      <button class="close" onclick="closeDrawer()">✕</button>
+    </div>
+    <h2 id="drSummary"></h2>
+  </div>
+  <div class="dr-body">
+    <div class="kv" id="drKv"></div>
+    <div class="sec">描述</div>
+    <div class="desc-box" id="drDesc"></div>
+    <div class="sec">评论</div>
+    <div id="drComments"></div>
+  </div>
+  <div class="dr-foot">
+    <textarea id="drCommentInput" placeholder="添加评论…（演示：直接追加到评论列表）"></textarea>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="closeDrawer()">关闭</button>
+      <button class="btn btn-primary" onclick="addComment()">评论</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== 新建缺陷弹窗 ===== -->
+<div class="modal-wrap" id="modalWrap">
+  <div class="modal">
+    <div class="mh">
+      <h3>新建问题</h3>
+      <button class="close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mb">
+      <div class="frow">
+        <label>摘要 <span class="req">*</span></label>
+        <input type="text" id="mSummary" placeholder="一句话描述问题">
+      </div>
+      <div class="frow2">
+        <div class="frow">
+          <label>问题类型</label>
+          <select id="mType"><option value="Bug">缺陷</option><option value="Task">任务</option><option value="Story">需求</option></select>
+        </div>
+        <div class="frow">
+          <label>优先级</label>
+          <select id="mPriority"><option>最高</option><option selected>高</option><option>中</option><option>低</option></select>
+        </div>
+      </div>
+      <div class="frow2">
+        <div class="frow">
+          <label>指派给</label>
+          <select id="mAssignee"></select>
+        </div>
+        <div class="frow">
+          <label>版本</label>
+          <input type="text" id="mVersion" placeholder="如 v2.3.0">
+        </div>
+      </div>
+      <div class="frow">
+        <label>描述</label>
+        <textarea id="mDesc" placeholder="复现步骤、期望结果、实际结果…"></textarea>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="createIssue()">创建</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 演示数据与常量 ============ */
+const STATUSES = [
+  { name: '待处理', color: '#6b778c' },
+  { name: '进行中', color: '#0052cc' },
+  { name: '待验证', color: '#ff8b00' },
+  { name: '已解决', color: '#36b37e' },
+  { name: '已关闭', color: '#42526e' },
+];
+const PRIORITIES = [
+  { name: '最高', color: '#de350c', glyph: '!!!' },
+  { name: '高',   color: '#ff5630', glyph: '!↑' },
+  { name: '中',   color: '#ff8b00', glyph: '↔' },
+  { name: '低',   color: '#4c9aff', glyph: '!↓' },
+];
+const TYPES = [
+  { name: 'Bug',   glyph: '🐞', color: '#de350c' },
+  { name: 'Task',  glyph: '📝', color: '#0052cc' },
+  { name: 'Story', glyph: '👤', color: '#6554c0' },
+];
+const PEOPLE = [
+  { name: '于工',   color: '#6554c0' },
+  { name: '宋工',   color: '#0052cc' },
+  { name: '张测试', color: '#087443' },
+  { name: '李测试', color: '#99450d' },
+  { name: '王后端', color: '#bf2746' },
+  { name: '未指派', color: '#87909d' },
+];
+const VERSIONS = ['v2.3.0', 'v2.2.1', 'v2.2.0', 'v2.1.4'];
+
+let seq = 101;
+let issues = [
+  { key: 'ATW-098', type: 'Bug',   summary: '弱网 2G 预设下消息发送超时未重试', status: '进行中', prio: '高', assignee: '于工', reporter: '张测试', version: 'v2.3.0', updated: '今天 14:32', created: '2026-08-28',
+    desc: '复现步骤：\n1. 弱网工具选择 2G 预设（延迟 500ms / 丢包 10%）\n2. 在消息发送页批量发送 20 条消息\n3. 观察执行结果\n\n实际：第 13 条开始持续超时，未触发自动重试。\n期望：超时应按策略重试 3 次并标记失败原因。',
+    comments: [
+      { who: '王后端', when: '今天 09:12', text: '后端日志显示 mitmproxy 在弱网下偶发重置连接，先按重试策略兜底。' },
+      { who: '于工',   when: '今天 14:32', text: '已定位：重试计数在弱网断连场景未重置，修复中。' },
+    ] },
+  { key: 'ATW-097', type: 'Bug',   summary: '用例执行页远程模式提示文案未隐藏', status: '已解决', prio: '中', assignee: '宋工', reporter: '李测试', version: 'v2.3.0', updated: '今天 11:05', created: '2026-08-27',
+    desc: '远程模式下用例执行页仍显示本地模式提示文案，容易误导操作。',
+    comments: [ { who: '宋工', when: '今天 11:05', text: '已按模式隐藏，待验证。' } ] },
+  { key: 'ATW-096', type: 'Task',  summary: '登录页新增英文渐变标语与工作台配色', status: '已解决', prio: '中', assignee: '于工', reporter: '宋工', version: 'v2.3.0', updated: '昨天 18:40', created: '2026-08-26',
+    desc: '登录页标题由「自动化测试平台」改为「自动化测试工作台」，副标题下方新增一行四平台色渐变英文标语。',
+    comments: [ { who: '宋工', when: '昨天 18:40', text: '已验收，效果与设计稿一致。' } ] },
+  { key: 'ATW-095', type: 'Bug',   summary: '千牛订单抓取多版本混淆 id 兜底坐标偏移', status: '已关闭', prio: '最高', assignee: '王后端', reporter: '张测试', version: 'v2.2.1', updated: '昨天 16:20', created: '2026-08-24',
+    desc: '千牛新版本混淆 id 变化导致兜底坐标点击偏移，部分设备（.144/.150 分辨率）抓取失败。',
+    comments: [
+      { who: '王后端', when: '08-25 10:02', text: '已做多版本兼容与分辨率缩放兜底。' },
+      { who: '张测试', when: '昨天 16:20', text: '回归通过，关闭。' },
+    ] },
+  { key: 'ATW-094', type: 'Story', summary: '弱网工具页面布局升级（状态与说明并排）', status: '待验证', prio: '中', assignee: '于工', reporter: '宋工', version: 'v2.3.0', updated: '昨天 10:11', created: '2026-08-23',
+    desc: '弱网工具页弱网状态与使用说明并排放置在顶部，提示精简为 2×2 网格，安装状态检查置顶。',
+    comments: [ { who: '张测试', when: '昨天 10:11', text: '页面已更新，待完整走查后确认。' } ] },
+  { key: 'ATW-093', type: 'Bug',   summary: 'mock-server 心跳丢失后连接未自动恢复', status: '进行中', prio: '最高', assignee: '王后端', reporter: '李测试', version: 'v2.3.0', updated: '今天 09:48', created: '2026-08-21',
+    desc: 'mock 中控服务心跳丢失 3 次后前端连接状态一直为断开，需刷新页面才恢复。',
+    comments: [ { who: '王后端', when: '今天 09:48', text: '正在补指数退避重连逻辑。' } ] },
+  { key: 'ATW-092', type: 'Task',  summary: '版本变更记录 JSON 结构化改造', status: '待处理', prio: '低', assignee: '未指派', reporter: '宋工', version: 'v2.3.0', updated: '2026-08-20', created: '2026-08-20',
+    desc: '各平台 changelog 由自由文本改为结构化 JSON，便于版本记录页渲染。', comments: [] },
+  { key: 'ATW-091', type: 'Bug',   summary: '代理规则页 PAC 文件编辑后未即时生效', status: '已解决', prio: '高', assignee: '宋工', reporter: '张测试', version: 'v2.2.1', updated: '2026-08-19', created: '2026-08-18',
+    desc: '编辑 proxy.pac 保存后需重启代理才生效，应在保存后热加载。',
+    comments: [ { who: '宋工', when: '2026-08-19 15:30', text: '已加热加载，待验证。' } ] },
+  { key: 'ATW-090', type: 'Bug',   summary: '定时任务跨天去重误杀同日多任务', status: '待处理', prio: '高', assignee: '于工', reporter: '李测试', version: 'v2.2.1', updated: '2026-08-17', created: '2026-08-17',
+    desc: '同日同用例的两个不同定时任务被去重逻辑合并，第二个未触发。', comments: [] },
+  { key: 'ATW-089', type: 'Story', summary: '分布式执行机集群状态看板', status: '已关闭', prio: '中', assignee: '王后端', reporter: '宋工', version: 'v2.2.0', updated: '2026-08-12', created: '2026-08-05',
+    desc: '机器管理页新增服务状态点（mitmproxy / 弱网 / MinIO / Python 进程数）。',
+    comments: [ { who: '宋工', when: '2026-08-12 09:00', text: '验收通过。' } ] },
+  { key: 'ATW-088', type: 'Task',  summary: '弱网演示环境接入 MinIO 版本桶', status: '已关闭', prio: '低', assignee: '于工', reporter: '宋工', version: 'v2.2.0', updated: '2026-08-10', created: '2026-08-08',
+    desc: '测试版本安装页的版本下拉选项改为从 MinIO 对应 bucket 动态获取。', comments: [] },
+  { key: 'ATW-087', type: 'Bug',   summary: '消息抓取页长列表滚动卡顿', status: '待处理', prio: '低', assignee: '未指派', reporter: '张测试', version: 'v2.1.4', updated: '2026-08-06', created: '2026-08-06',
+    desc: '消息记录超过 2000 条后滚动掉帧，考虑虚拟滚动。', comments: [] },
+];
+
+/* ============ 渲染 ============ */
+const $ = (id) => document.getElementById(id);
+const statusOf = (n) => STATUSES.find((s) => s.name === n) || STATUSES[0];
+const prioOf = (n) => PRIORITIES.find((p) => p.name === n) || PRIORITIES[2];
+const typeOf = (n) => TYPES.find((t) => t.name === n) || TYPES[0];
+const personOf = (n) => PEOPLE.find((p) => p.name === n) || PEOPLE[PEOPLE.length - 1];
+
+let openStatFilter = null; // 点击统计条选中的状态
+let fStatus = '', fPriority = '', fAssignee = '';
+
+function pill(status) {
+  const s = statusOf(status);
+  return `<span class="pill" style="color:${s.color};border-color:${s.color}55;background:${s.color}14">${s.name}</span>`;
+}
+function prio(p) {
+  const pr = prioOf(p);
+  return `<span class="prio"><span class="pdot" style="background:${pr.color};clip-path:polygon(50% 0,100% 100%,0 100%)"></span>${p}</span>`;
+}
+function who(name) {
+  const p = personOf(name);
+  return `<span class="who"><span class="avatar" style="width:22px;height:22px;font-size:10px;background:${p.color}">${p.name.slice(0, 2)}</span>${p.name}</span>`;
+}
+
+function renderStats() {
+  $('stats').innerHTML = STATUSES.map((s) => {
+    const n = issues.filter((i) => i.status === s.name).length;
+    return `<div class="stat ${openStatFilter === s.name ? 'on' : ''}" onclick="statClick('${s.name}')">
+      <span class="dot" style="background:${s.color}"></span>
+      <span class="n">${n}</span><span class="t">${s.name}</span></div>`;
+  }).join('');
+}
+
+function statClick(name) {
+  openStatFilter = openStatFilter === name ? null : name;
+  renderStats();
+  renderTable();
+}
+
+function filtered() {
+  return issues.filter((i) =>
+    (!openStatFilter || i.status === openStatFilter) &&
+    (!fStatus || i.status === fStatus) &&
+    (!fPriority || i.prio === fPriority) &&
+    (!fAssignee || i.assignee === fAssignee));
+}
+
+function renderTable() {
+  const list = filtered();
+  $('tbody').innerHTML = list.map((i) => {
+    const t = typeOf(i.type);
+    return `<tr onclick="openDrawer('${i.key}')">
+      <td><span class="icell"><span class="type-ic" style="background:${t.color}">${t.glyph}</span></span></td>
+      <td><span class="icell"><span class="sum" title="${i.summary}">${i.summary}</span></span></td>
+      <td>${pill(i.status)}</td>
+      <td>${prio(i.prio)}</td>
+      <td>${who(i.assignee)}</td>
+      <td>${who(i.reporter)}</td>
+      <td class="muted" style="white-space:nowrap">${i.updated}</td>
+    </tr>`;
+  }).join('');
+  $('empty').style.display = list.length ? 'none' : 'block';
+  $('footInfo').textContent = `显示 ${list.length} / ${issues.length} 条问题`;
+}
+
+function clearFilters() {
+  openStatFilter = fStatus = fPriority = fAssignee = '';
+  $('fStatus').value = $('fPriority').value = $('fAssignee').value = '';
+  renderStats();
+  renderTable();
+}
+
+function initFilters() {
+  const fs = $('fStatus');
+  STATUSES.forEach((s) => fs.insertAdjacentHTML('beforeend', `<option>${s.name}</option>`));
+  const fp = $('fPriority');
+  PRIORITIES.forEach((p) => fp.insertAdjacentHTML('beforeend', `<option>${p.name}</option>`));
+  const fa = $('fAssignee');
+  PEOPLE.forEach((p) => fa.insertAdjacentHTML('beforeend', `<option>${p.name}</option>`));
+  fs.onchange = () => { fStatus = fs.value; openStatFilter = fStatus || openStatFilter; renderStats(); renderTable(); };
+  fp.onchange = () => { fPriority = fp.value; renderTable(); };
+  fa.onchange = () => { fAssignee = fa.value; renderTable(); };
+  const ma = $('mAssignee');
+  PEOPLE.filter((p) => p.name !== '未指派').forEach((p) => ma.insertAdjacentHTML('beforeend', `<option>${p.name}</option>`));
+}
+
+/* ============ 详情抽屉 ============ */
+let curKey = null;
+function openDrawer(key) {
+  const i = issues.find((x) => x.key === key);
+  if (!i) return;
+  curKey = key;
+  const t = typeOf(i.type);
+  const ic = $('drTypeIc');
+  ic.style.background = t.color; ic.textContent = t.glyph;
+  $('drKey').textContent = i.key;
+  $('drStatusPill').innerHTML = pill(i.status);
+  $('drSummary').textContent = i.summary;
+  $('drKv').innerHTML = [
+    ['状态', pill(i.status)],
+    ['优先级', prio(i.prio)],
+    ['问题类型', t.name === 'Bug' ? '缺陷' : t.name === 'Task' ? '任务' : '需求'],
+    ['指派给', who(i.assignee)],
+    ['报告人', who(i.reporter)],
+    ['版本', i.version || '-'],
+    ['创建时间', i.created],
+    ['更新时间', i.updated],
+  ].map(([k, v]) => `<span class="k">${k}</span><span>${v}</span>`).join('');
+  $('drDesc').textContent = i.desc;
+  $('drComments').innerHTML = i.comments.length
+    ? i.comments.map((c) => {
+        const p = personOf(c.who);
+        return `<div class="comment">
+          <span class="avatar" style="background:${p.color}">${p.name.slice(0, 2)}</span>
+          <div class="cbody"><div class="cmeta"><b>${p.name}</b> · ${c.when}</div><div class="ctext">${c.text}</div></div>
+        </div>`;
+      }).join('')
+    : '<div class="muted" style="font-size:13px">暂无评论</div>';
+  $('drCommentInput').value = '';
+  $('mask').classList.add('show');
+  $('drawer').classList.add('show');
+}
+function closeDrawer() {
+  $('mask').classList.remove('show');
+  $('drawer').classList.remove('show');
+  curKey = null;
+}
+function addComment() {
+  const i = issues.find((x) => x.key === curKey);
+  const v = $('drCommentInput').value.trim();
+  if (!i || !v) return;
+  i.comments.push({ who: 'yu', when: '刚刚', text: v });
+  i.updated = '刚刚';
+  openDrawer(i.key);
+  renderTable();
+  toast('评论已添加（演示）', true);
+}
+
+/* ============ 新建问题 ============ */
+function openModal() { $('modalWrap').classList.add('show'); setTimeout(() => $('mSummary').focus(), 50); }
+function closeModal() { $('modalWrap').classList.remove('show'); }
+function createIssue() {
+  const summary = $('mSummary').value.trim();
+  if (!summary) { toast('请填写摘要', false); return; }
+  seq += 1;
+  const key = `ATW-${seq}`;
+  issues.unshift({
+    key, type: $('mType').value, summary, status: '待处理', prio: $('mPriority').value,
+    assignee: $('mAssignee').value, reporter: 'yu', version: $('mVersion').value.trim() || '未分配',
+    updated: '刚刚', created: '2026-09-07',
+    desc: $('mDesc').value.trim() || '（无描述）', comments: [],
+  });
+  $('mSummary').value = ''; $('mDesc').value = ''; $('mVersion').value = '';
+  closeModal();
+  clearFilters();
+  openDrawer(key);
+  toast(`已创建 ${key}（演示数据）`, true);
+}
+
+/* ============ Toast ============ */
+let toastTimer = null;
+function toast(msg, ok) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (ok ? ' ok' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeDrawer(); closeModal(); }
+});
+
+initFilters();
+renderStats();
+renderTable();
+</script>
+</body>
+</html>

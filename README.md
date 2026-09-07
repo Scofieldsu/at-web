@@ -33,8 +33,8 @@
 系统配置                          /config
 └─ 配置管理                        /config/settings      配置文件树编辑（config/）
 外链直达                          /external
-├─ VM 控制台                       /ext/vm-console       外部系统入口（演示占位页）
-└─ MinIO                           /ext/minio            外部系统入口（演示占位页）
+├─ 缺陷跟踪平台                    /ext/defects          JIRA 风格缺陷跟踪演示页（静态）
+└─ 文件存储                        /ext/files            对象存储风格文件管理演示页（静态）
 ```
 
 平台覆盖的测试能力一览：
@@ -222,7 +222,7 @@ class PlaywrightEngine(Engine):
 | 店铺 | `演示店铺A/B/C` |
 | 网段 | `10.0.0.11~16` / `10.0.0.100` |
 | 被测程序 | `demo_agent.exe` @ `C:/demo-agent/...` |
-| 外链 | 后端占位页 `/ext/vm-console`、`/ext/minio` |
+| 外链 | 后端静态演示页 `/ext/defects`（缺陷跟踪）、`/ext/files`（文件存储），位于 `server/static/ext/` |
 
 > 全部为虚构数据，`config/`、`server/`、`frontend/src/` 下无真实手机号 / 真实店铺名 / 内网 IP 残留。
 

@@ -51,6 +51,8 @@
 
 ## 截图
 
+![AT Web 登录演示](./login.gif)
+
 ![AT Web 演示](./demo.png)
 
 ---

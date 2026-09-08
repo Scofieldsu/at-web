@@ -60,6 +60,12 @@ const prepare: AppRouteModule = {
       component: () => import('@/views/platform/distributed/machines.vue'),
       meta: { title: '机器管理', icon: 'ant-design:cloud-server-outlined' },
     },
+    {
+      path: 'android-debug',
+      name: 'AndroidDebug',
+      component: () => import('@/views/platform/android-debug/index.vue'),
+      meta: { title: 'Android 调试', icon: 'ant-design:mobile-outlined' },
+    },
   ],
 };
 

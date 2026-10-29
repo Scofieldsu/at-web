@@ -378,9 +378,9 @@ def main() -> int:
     check("config 路径穿越拒绝", r.status_code == 400)
 
     # ---- 外链占位页 ----
-    for key in ("vm-console", "minio"):
+    for key, marker in (("defects", "缺陷跟踪平台".encode("utf-8")), ("files", "文件存储".encode("utf-8"))):
         r = c.get(f"/ext/{key}")
-        check(f"ext/{key} 占位页", r.status_code == 200 and b"DEMO" in r.data)
+        check(f"ext/{key} 占位页", r.status_code == 200 and marker in r.data)
 
     # ---- 汇总 ----
     print()

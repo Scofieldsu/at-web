@@ -1,21 +1,26 @@
 # AT Web · 通用自动化测试平台框架
 
-一个**通用自动化测试平台框架**：完整的 Web 控制台（17 个页面 + 2 个外链）、REST API 契约与菜单结构，内置**可插拔的演示引擎（DemoEngine）+ 活数据**。开箱即可运行、可点、可展示，每个页面都有真实交互数据（进度、SSE 实时流、CRUD）。
+一个**通用自动化测试平台框架**：完整的 Web 控制台（22 个页面 + 2 个外链）、REST API 契约与菜单结构，内置**可插拔的演示引擎（DemoEngine）+ 活数据**。开箱即可运行、可点、可展示，每个页面都有真实交互数据（进度、SSE 实时流、CRUD）。
 
 > **定位**：这是一个"框架 + 演示"。执行能力（WS 消息代理 / 安装器 / Playwright / 分布式执行机）由引擎层接口抽象，可接入你自己的实现。
 
 ## 菜单结构与测试能力
 
-顶部导航栏按**测试工作流**组织，一级菜单从左到右依次为：**总览 → 环境准备 → 消息模拟 → 测试执行 → 质量归档 → 系统配置 → 外链直达**。上下两级结构如下（一级菜单在上，其二级菜单列于下方，括号内为页面路径）：
+顶部导航栏按**测试工作流**组织，一级菜单从左到右依次为：**总览 → 环境准备 → 故障模拟 → 消息模拟 → 测试执行 → 质量归档 → 系统配置 → 外链直达**。上下两级结构如下（一级菜单在上，其二级菜单列于下方，括号内为页面路径）：
 
 ```
 总览                              /dashboard/index
 环境准备（① 测试环境准备）        /prepare
 ├─ 安装与账号                      /prepare/env          测试版本安装、账号与 Agent 上线
 ├─ 代理与规则                      /prepare/proxy        代理状态与抓包规则
-├─ 弱网工具                        /prepare/weaknet      弱网模拟（延迟/丢包/节流预设）
-└─ 机器管理                        /prepare/machines     分布式执行机集群
-消息模拟（② 消息链路）            /message
+├─ 机器管理                        /prepare/machines     分布式执行机集群
+└─ Android 调试                    /prepare/android-debug Android 真机调试
+故障模拟（② 故障注入，演示数据）  /fault
+├─ 代理拦截                        /fault/proxy-intercept 模拟代理拦截/转发/放行规则
+├─ 弱网设置                        /fault/weaknet        弱网模拟（延迟/丢包/节流/重复/乱序 + IP 段自动采集）
+├─ 弹窗模拟                        /fault/popup-sim      模拟弹窗状态与关闭行为
+└─ 运行时补丁                      /fault/runtime-patch  模拟运行时故障注入场景
+消息模拟（③ 消息链路）            /message
 ├─ 消息发送                        /message/send         模拟服务端下发消息
 ├─ 消息注入                        /message/inject       向在线客户端注入指令
 ├─ 消息嗅探                        /message/sniffer      消息流实时抓包
@@ -41,7 +46,8 @@
 
 | 能力域 | 测试能力 |
 |--------|----------|
-| 环境准备 | 测试版本安装与升级（main / full 两种安装类型）、账号与 Agent 上线、代理规则管理、弱网模拟（基线 / 3G / 2G / 极差 / 断网 / 混沌等预设，支持延迟·丢包·节流·乱序·重复）、分布式执行机集群管理 |
+| 环境准备 | 测试版本安装与升级（main / full 两种安装类型）、账号与 Agent 上线、代理规则管理、分布式执行机集群管理、Android 真机调试 |
+| 故障模拟 | 代理拦截（模拟拦截/转发/放行规则）、弱网设置（基线 / 3G / 2G / 极差 / 断网等预设 + 自定义延迟·丢包·节流·重复·乱序·TCP RST 与上下行方向、IP 段自动采集）、弹窗模拟（模拟弹窗状态与关闭行为）、运行时补丁（模拟故障注入场景）；全部为演示数据，不实际注入 |
 | 消息链路 | 消息发送、消息注入、消息嗅探（双向消息流抓包）、Mock Server（模板化模拟回复、连接与消息流观察） |
 | 测试执行 | 测试参数配置（版本 / 店铺 / Agent / 目标机器）、用例选择与批量提交、任务实时调度与日志（SSE 推流）、测试报告与通过率统计、UI 压力测试、定时执行计划 |
 | 质量归档 | 版本测试记录（各平台版本 × 用例结果）、版本更新说明（按平台的时间线 changelog） |
@@ -85,16 +91,19 @@ at-web/
 │   │   ├── base.py          #   Engine 接口（submit/run/cancel/logs/plan_steps/run_step）
 │   │   ├── demo_engine.py   #   内置演示引擎（模拟 pending→running→success/failed + 报告）
 │   │   └── registry.py      #   按配置选择引擎实现
-│   └── modules/             # 14 个 REST 模块（Blueprint）
-│       ├── auth/  cases/  config/  env/  health/  machines/
-│       └── mock_ws/  plan/  proxy/  schedules/  tasks/  ui/  version_records/
+│   └── modules/             # 19 个 REST 模块（Blueprint）
+│       ├── auth/  cases/  changelog/  clumsy/  config/  env/
+│       ├── fault_intercept/  fault_patch/  fault_popup/  health/  machines/
+│       └── mock_ws/  plan/  proxy/  schedules/  stress/  tasks/  ui/  version_records/
 ├── frontend/                # Vben Admin 2 / Vue3 / Ant Design Vue
 │   ├── src/api/platform/            # API 封装
-│   ├── src/views/platform/          # 17 个业务页面
-│   ├── src/router/routes/modules/   # platform.ts（业务菜单）+ external.ts（外链）
+│   ├── src/api/fault/               # 故障模拟 API 封装
+│   ├── src/views/platform/          # 18 个业务页面
+│   ├── src/views/fault/             # 故障模拟 4 个页面（代理拦截/弱网设置/弹窗模拟/运行时补丁）
+│   ├── src/router/routes/modules/   # platform.ts（业务菜单）+ fault.ts（故障模拟）+ external.ts（外链）
 │   └── src/store/modules/tasks.ts   # 任务状态 store
 ├── scripts/
-│   ├── smoke_test.py        # 96 项全端点冒烟测试
+│   ├── smoke_test.py        # 103 项全端点冒烟测试
 │   └── launch_detached.ps1  # 分离进程启动后端（调试用）
 └── var/                     # 运行时生成（日志/JSON 数据/结果文件，不入库）
 ```
@@ -232,9 +241,9 @@ class PlaywrightEngine(Engine):
 
 ## 验证记录
 
-- `scripts/smoke_test.py`：**96 通过 / 0 失败**（14 模块全端点、任务提交→执行→报告、SSE、定时、配置、外链占位页）。
+- `scripts/smoke_test.py`：**103 通过 / 0 失败**（19 模块全端点、任务提交→执行→报告、SSE、定时、配置、故障模拟、外链占位页）。
 - 前端 `pnpm build`：**编译通过**（仅 chunk 体积告警）。
-- 前后端联调：17 个页面数据端点全部 200 且有数据；提交任务可看到实时进度直至 `success` 并生成报告；`/api/ui/events` SSE 实时推流正常。
+- 前后端联调：22 个页面数据端点全部 200 且有数据；提交任务可看到实时进度直至 `success` 并生成报告；`/api/ui/events` SSE 实时推流正常。
 
 ## 常见问题
 

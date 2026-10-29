@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from flask import Blueprint, jsonify, request
 
+from . import collector
 from .models import ClumsyConfig
 from .presets import list_presets
 from .service import get_service
@@ -63,6 +64,32 @@ def get_presets():
 def check_installation():
     """检查安装状态（演示）。"""
     return jsonify(get_service().validate_installation())
+
+
+@bp.route("/collect/platforms", methods=["GET"])
+def get_collect_platforms():
+    """可采集网段的平台列表：[{"key", "label", "preset", "hint"}]（演示：通用平台）。"""
+    return jsonify(collector.list_platforms())
+
+
+@bp.route("/collect", methods=["POST"])
+def collect_ips():
+    """按平台采集外网 IP 段并生成过滤规则（演示：模拟采样，阻塞数秒）。
+
+    Body:
+        {"platform": "client_a", "seconds": 20, "prefix_len": 16}
+    """
+    data = request.get_json(force=True, silent=True) or {}
+    try:
+        seconds = max(5, min(60, int(data.get("seconds", 20))))
+        prefix_len = int(data.get("prefix_len", 16))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": "seconds / prefix_len 必须是整数"}), 400
+    try:
+        result = collector.collect(str(data.get("platform", "")), seconds, prefix_len)
+    except collector.CollectError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+    return jsonify({"success": True, "data": result})
 
 
 @bp.route("/validate", methods=["POST"])

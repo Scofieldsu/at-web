@@ -49,12 +49,6 @@ const prepare: AppRouteModule = {
       meta: { title: '代理与规则', icon: 'ant-design:global-outlined' },
     },
     {
-      path: 'weaknet',
-      name: 'WeakNet',
-      component: () => import('@/views/platform/WeakNet.vue'),
-      meta: { title: '弱网工具', icon: 'ant-design:wifi-outlined' },
-    },
-    {
       path: 'machines',
       name: 'PrepareMachines',
       component: () => import('@/views/platform/distributed/machines.vue'),
